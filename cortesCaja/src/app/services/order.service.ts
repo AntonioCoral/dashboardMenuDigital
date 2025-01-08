@@ -11,8 +11,10 @@ export class OrderService {
   private myAppUrl: string;
   private myApiUrl: string;
   private headers: HttpHeaders;
+  private apibase: string
 
   constructor(private http: HttpClient) { 
+    this.apibase = 'http://localhost:500/api/caja/'
     this.myAppUrl = environment.endpoint;
     this.myApiUrl = 'api/ordenes/';
     this.headers = new HttpHeaders({
@@ -24,7 +26,7 @@ export class OrderService {
     return this.http.get<Order[]>(`${this.myAppUrl}${this.myApiUrl}`, { headers: this.headers });
   }
   getOrdersByDate(date: string): Observable<Order[]> {
-    return this.http.get<Order[]>(`${this.myAppUrl}${this.myApiUrl}date/${date}`);
+    return this.http.get<Order[]>(`${this.myAppUrl}${this.myApiUrl}date/${date}`,);
   }
 
   getLastOrderNumber(date: string): Observable<{ lastOrderNumber: number }> {

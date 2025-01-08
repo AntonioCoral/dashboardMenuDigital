@@ -6,6 +6,7 @@ import { EcommerceService } from 'src/app/services/ecommerce.service';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { ICategory } from 'src/app/interfaces/interface';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-add-category',
@@ -21,7 +22,8 @@ export class AddCategoryComponent implements OnInit {
     private fb: FormBuilder,
     private EcommerceService: EcommerceService,
     private toastr: ToastrService,
-    private router: Router
+    private router: Router,
+    private location: Location
   ) {
     this.form = this.fb.group({
       name: ['', Validators.required]
@@ -60,13 +62,16 @@ export class AddCategoryComponent implements OnInit {
     );
   }
   deleteCategory(id: number): void {
-    if (confirm('¿Estás seguro de que deseas eliminar esta categoría?')) {
+    if (confirm('¿Estás seguro de que deseas eliminar esta categoría? Se eliminaran todos los productos asocíados a esta categoría')) {
       this.EcommerceService.deleteCategory(id).subscribe(() => {
-        this.toastr.error('Categoría eliminada con éxito');
+        this.toastr.success('Categoría eliminada con éxito');
         this.loadCategories();  // Recargar la lista después de eliminar
       }, error => {
         this.toastr.error('Error al eliminar la categoría');
       });
     }
+  }
+  goBack(): void {
+    this.location.back(); // Navega hacia atrás en el historial del navegador
   }
 }

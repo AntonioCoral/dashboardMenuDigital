@@ -1,48 +1,45 @@
-<nav class="navbar navbar-expand-lg">
-  <div class="container-fluid">
-    <img src="./assets/logo2.png" style="width: 90px; height: 60px; margin-left: 5%;">
-    <div class="collapse navbar-collapse" id="navbarColor02">
-    </div>
- 
-    <button type="button" class="btn btn-outline-info mt-2" 
-    style="font-size: 22px; width: 120px; height: 50px; font-family:'Raleway', sans-serif; font-weight: bold; margin-right: 1.5%;" routerLink="/">Login</button>
+<app-navbar></app-navbar>
 
-    <button type="button" class="btn btn-outline-success mt-2" 
-    style="font-size: 22px; width: 120px; height: 50px; font-family:'Raleway', sans-serif; font-weight: bold; margin-right: 3%;" routerLink="/list-orders">Ordenes</button>
-
-    <div class="collapse" id="navbarColor02">
-    </div>
+<div class="container mt-4">
+  <!-- Título de la página -->
+  <h2 class="text-primary fw-bold mb-4" style="font-family: 'Roboto', sans-serif;">Reportes de Órdenes</h2>
+  
+  <!-- Formulario para elegir la fecha -->
+  <div class="card shadow-sm p-4 mb-4">
+    <form (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label for="date" class="form-label text-secondary fw-bold">Elige el día</label>
+        <input
+          type="date"
+          id="date"
+          [(ngModel)]="selectedDate"
+          name="date"
+          class="form-control"
+          required
+        />
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Ver órdenes</button>
+    </form>
   </div>
-</nav>
 
-<div class="container">
-  <h2>Reportes</h2>
-  <form (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <label for="date">Elige el día</label>
-      <input type="date" id="date" [(ngModel)]="selectedDate" name="date" class="form-control" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Ver ordenes</button>
-  </form>
-
-  <div *ngIf="orders.length > 0">
-    <h3>Ordenes de: {{ selectedDate }}</h3>
-    <div class="form">
-      <table class="table table-hover table-primary">
-        <thead>
+  <!-- Tabla de resultados -->
+  <div *ngIf="orders.length > 0" class="card shadow-sm p-4">
+    <h3 class="text-primary fw-bold mb-4">Órdenes de: {{ selectedDate }}</h3>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="bg-primary text-white">
           <tr>
             <th scope="col">N.</th>
             <th scope="col">Hora</th>
             <th scope="col">Caja</th>
             <th scope="col">Cliente</th>
-            <th scope="col">Direccion</th>
+            <th scope="col">Dirección</th>
             <th scope="col">Total</th>
             <th scope="col">Transferencia</th>
             <th scope="col">Efectivo</th>
             <th scope="col">Repartidor</th>
             <th scope="col">Servicio</th>
             <th scope="col">Estatus</th>
-            
           </tr>
         </thead>
         <tbody>
@@ -61,7 +58,11 @@
           </tr>
         </tbody>
       </table>
-      <h5 *ngIf="orders.length == 0">No hay ordenes</h5>
     </div>
+  </div>
+
+  <!-- Mensaje cuando no hay órdenes -->
+  <div *ngIf="orders.length === 0" class="text-center mt-4">
+    <h5 class="text-muted">No hay órdenes para la fecha seleccionada</h5>
   </div>
 </div>

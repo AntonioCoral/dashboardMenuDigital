@@ -12,7 +12,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 //Modulos
 import { ReactiveFormsModule } from '@angular/forms'
-import { HttpClientModule } from '@angular/common/http'
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http'
 import { ToastrModule } from 'ngx-toastr';
 
 
@@ -34,6 +34,9 @@ import { ClientesComponent } from './componentes/clientes/clientes.component';
 import { AddCategoryComponent } from './componentes/admin-categories/admin-categories.component';
 import { AdminProductsComponent } from './componentes/admin-products/admin-products.component';
 import { EditProductsComponent } from './componentes/edit-products/edit-products.component';
+import { CarouselManagementComponent } from './componentes/carousel-management/carousel-management.component';
+import { ContactInfoManagementComponent } from './componentes/contact-info-management/contact-info-management.component';
+import { AuthInterceptor } from './services/auth-interceptor.service';
 
 
 
@@ -55,6 +58,8 @@ import { EditProductsComponent } from './componentes/edit-products/edit-products
     AddCategoryComponent,
     AdminProductsComponent,
     EditProductsComponent,
+    CarouselManagementComponent,
+    ContactInfoManagementComponent,
   ],
   imports: [
     BrowserModule,
@@ -77,7 +82,11 @@ import { EditProductsComponent } from './componentes/edit-products/edit-products
   registrationStrategy: 'registerWhenStable:30000'
 })
   ],
-  providers: [DatePipe, { provide: LocationStrategy, useClass: HashLocationStrategy }],
+  providers: [
+    DatePipe,
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }, // Aquí se registra el interceptor
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

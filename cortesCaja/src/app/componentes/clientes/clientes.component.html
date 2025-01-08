@@ -1,6 +1,5 @@
-<div class="container">
-  <h2>Buscar Cliente</h2>
-  <form [formGroup]="searchForm" (ngSubmit)="searchClient()" class="mb-4">
+<div class="container ">
+  <form [formGroup]="searchForm" (ngSubmit)="searchClient()" class="mb-3 p-1">
     <div class="input-group">
       <input type="text" id="query" formControlName="query" class="form-control" placeholder="Buscar por nombre o teléfono">
       <div class="input-group-append">
@@ -9,12 +8,12 @@
     </div>
   </form>
 
-  <div *ngIf="foundClient" class="card p-3 mb-4" style="border: 1px solid #ccc;">
+  <div *ngIf="foundClient" class="card p-1 mb-4" style="border: 1px solid #ccc;">
     <h3>Cliente encontrado:</h3>
     <p><strong>Nombre:</strong> {{ foundClient.nombre }}</p>
     <p><strong>Apellido:</strong> {{ foundClient.apellido }}</p>
     <p><strong>Dirección:</strong> {{ foundClient.direction }}</p>
-    <button class="btn btn-success" (click)="goToAddOrder()">Agregar Orden</button>
+    <button class="btn btn-success" style="background-color: #0A75E6; border: none;" (click)="goToAddOrder()">Agregar Orden</button>
   </div>
 
   <div *ngIf="isNewClient" class="card p-3" style="border: 1px solid #ccc;">

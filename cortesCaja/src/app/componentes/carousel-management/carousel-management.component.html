@@ -1,0 +1,90 @@
+<app-navbar></app-navbar>
+<div class="min-h-screen bg-gray-100 p-4">
+  <!-- Botón para volver -->
+  <div class="mb-4">
+    <button (click)="goBack()" class="flex items-center px-2 py-2 bg-white text-gray-500 rounded-full hover:text-yellow-600 shadow-sm">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+      </svg>
+    </button>
+  </div>
+<div class="container">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="text-center">Gestión de Imágenes</h2>
+
+      <!-- Formulario para agregar una nueva imagen -->
+      <div class="form-group">
+        <label for="title">Título</label>
+        <input
+          id="title"
+          type="text"
+          class="form-control"
+          [(ngModel)]="newImage.title"
+          placeholder="Título de la imagen"
+        />
+    
+        <label for="description">Descripción</label>
+        <input
+          id="description"
+          type="text"
+          class="form-control"
+          [(ngModel)]="newImage.description"
+          placeholder="Descripción de la imagen"
+        />
+    
+        <label for="section">Sección</label>
+        <select id="section" class="form-control" [(ngModel)]="newImage.section">
+          <option value="carousel">Carrusel</option>
+          <option value="home">Home</option>
+        </select>
+    
+        <label for="fileUpload">Subir Imagen</label>
+        <input
+          type="file"
+          id="fileUpload"
+          class="form-control-file"
+          (change)="handleFileInput($event)"
+        />
+    
+        <button class="btn btn-primary mt-2" (click)="addImage()">Agregar Imagen</button>
+      </div>
+    </div>
+    <div class="card-body">
+        <!-- Listado de imágenes -->
+        <div class="mt-4">
+          <h2 style="font-family: sans-serif;">IMÁGENES DEL CARUSEL</h2>
+          <div class="row">
+            <div class="col-md-6" *ngFor="let image of carouselImages">
+              <div class="card mb-3">
+                <img class="card-img-top" [src]="image.imageUrl" [alt]="image.title" />
+                <div class="card-body">
+                  <h5 class="card-title">{{ image.title }}</h5>
+                  <p class="card-text">{{ image.description }}</p>
+                  <button class="btn btn-danger" (click)="deleteImage(image.id!, 'carousel')">Eliminar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h2 style="font-family: sans-serif;">IMÁGENES DEL HOME</h2>
+          <div class="row">
+            <div class="col-md-6" *ngFor="let image of homeImages">
+              <div class="card mb-3">
+                <img class="card-img-top" [src]="image.imageUrl" [alt]="image.title" />
+                <div class="card-body">
+                  <h5 class="card-title">{{ image.title }}</h5>
+                  <p class="card-text">{{ image.description }}</p>
+                  <button class="btn btn-danger" (click)="deleteImage(image.id!, 'home')">Eliminar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    </div>
+  </div>
+  
+
+  
+</div>

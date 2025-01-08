@@ -22,6 +22,9 @@ const orden_1 = __importDefault(require("../routes/orden"));
 const cliente_1 = __importDefault(require("../routes/cliente"));
 const caja_1 = __importDefault(require("../routes/caja"));
 const _1 = require(".");
+const company_1 = __importDefault(require("../routes/company"));
+const auth_1 = __importDefault(require("../routes/auth"));
+const contactInfoRoutes_1 = __importDefault(require("../routes/contactInfoRoutes"));
 dotenv_1.default.config();
 class Server {
     constructor() {
@@ -57,6 +60,9 @@ class Server {
         this.app.use('/api/ordenes', (0, orden_1.default)(this.io));
         this.app.use('/api/clientes', cliente_1.default);
         this.app.use('/api/caja', caja_1.default);
+        this.app.use('/api/companies', company_1.default);
+        this.app.use('/api/auth', auth_1.default); // Ruta de autenticación
+        this.app.use('/api/contact', contactInfoRoutes_1.default); //Ruta para informacion de contacto
     }
     middlewares() {
         this.app.use(express_1.default.json());
@@ -77,8 +83,8 @@ class Server {
     sockets() {
         this.io.on('connection', (socket) => {
             console.log('Usuario conectado');
-            socket.on('disconnect', () => {
-                console.log('Usuario desconectado');
+            socket.on('disconnect', (reason) => {
+                console.log(`User disconnected: ${reason}`);
             });
         });
     }

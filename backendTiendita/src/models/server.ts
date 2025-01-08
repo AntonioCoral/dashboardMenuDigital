@@ -9,6 +9,9 @@ import routesCliente from '../routes/cliente';
 import routesCaja from '../routes/caja';
 import { syncDatabase } from '.';
 import fs from 'fs';
+import company from '../routes/company';
+import auth from '../routes/auth';
+import contactInfoRoutes from '../routes/contactInfoRoutes';
 
 
 dotenv.config();
@@ -62,6 +65,9 @@ class Server {
         this.app.use('/api/ordenes', routesOrden(this.io));
         this.app.use('/api/clientes', routesCliente);
         this.app.use('/api/caja', routesCaja);
+        this.app.use('/api/companies', company);
+        this.app.use('/api/auth', auth); // Ruta de autenticación
+        this.app.use('/api/contact', contactInfoRoutes);//Ruta para informacion de contacto
     }
 
     middlewares() {

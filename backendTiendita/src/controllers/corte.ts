@@ -9,6 +9,8 @@ import moment from 'moment-timezone';
 import { Op } from 'sequelize';
 import PedidosTransitos from '../models/pedidostransito';
 import Orden from '../models/orden';
+import Company from '../models/company';
+import {getSubdomain} from '../middlewares/subdomainMiddleware'
 
 
 // Configurar la zona horaria
@@ -16,7 +18,11 @@ const TIMEZONE = 'America/Mexico_City';
 
 export const createCaja = async (req: Request, res: Response) => {
   const transaction = await db.transaction();
+  const companyId = req.companyId; // Obtén el companyId del middleware
 
+  if (!companyId) {
+    return res.status(401).json({ message: 'Acceso no autorizado' });
+  }
   try {
     const { fecha, nombre, numeroCaja, totalEfectivo, totalTransferencias, totalRetiros, totalPagosTarjeta, totalPedidoTransito, ventaTotal, recargas, denominaciones, transferencias, retiros, pagosTarjeta, pedidosTransitos } = req.body;
 
@@ -32,7 +38,8 @@ export const createCaja = async (req: Request, res: Response) => {
       totalPagosTarjeta,
       totalPedidoTransito,
       ventaTotal,
-      recargas
+      recargas,
+      companyId
     }, { transaction });
 
     console.log("Caja creada:", nuevaCaja);
@@ -120,36 +127,43 @@ export const createCaja = async (req: Request, res: Response) => {
 };
 
 export const getCortesByDate = async (req: Request, res: Response) => {
-  const { date } = req.params;  
+  const { date } = req.params;
+  const companyId = req.companyId; // Obtén el companyId del middleware
+
+  if (!companyId) {
+    return res.status(401).json({ message: 'Acceso no autorizado' });
+  }
+
   try {
     const startDate = moment.tz(date, TIMEZONE).startOf('day').toDate();
     const endDate = moment.tz(date, TIMEZONE).endOf('day').toDate();
-    
+
     const cortes = await Caja.findAll({
       where: {
+        companyId,
         fecha: {
           [Op.gte]: startDate,
-          [Op.lte]: endDate
-        }
+          [Op.lte]: endDate,
+        },
       },
       include: [
         { model: Denominaciones, as: 'denominaciones' },
         { model: Transferencias, as: 'transferencias' },
         { model: Retiros, as: 'retiros' },
         { model: PagosTarjeta, as: 'pagosTarjeta' },
-        { model: PedidosTransitos, as: 'pedidosTransitos' }
-      ]
+        { model: PedidosTransitos, as: 'pedidosTransitos' },
+      ],
     });
+
     res.json(cortes);
-  } catch (error: unknown) {
-    console.error("Error al obtener cortes:", error);
-    if (error instanceof Error) {
-      res.status(500).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'An unknown error occurred.' });
-    }
+  } catch (error) {
+    console.error('Error al obtener cortes:', error);
+    res.status(500).json({ message: 'Error interno del servidor' });
   }
 };
+
+
+
 
 export const getLastCajaNumber = async (req: Request, res: Response) => {
   const { date } = req.params;

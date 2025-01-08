@@ -13,6 +13,9 @@ import { AddCorteComponent } from './componentes/add-corte/add-corte.component';
 import { AddCategoryComponent } from './componentes/admin-categories/admin-categories.component';
 import { AdminProductsComponent } from './componentes/admin-products/admin-products.component';
 import { EditProductsComponent } from './componentes/edit-products/edit-products.component';
+import { CarouselManagementComponent } from './componentes/carousel-management/carousel-management.component';
+import { ContactInfoService } from './services/contactInfo.service';
+import { ContactInfoManagementComponent } from './componentes/contact-info-management/contact-info-management.component';
 
 
 const routes: Routes = [
@@ -27,6 +30,8 @@ const routes: Routes = [
   { path: 'admin-categories', component: AddCategoryComponent },
   { path: 'admin-products', component: AdminProductsComponent },
   { path: 'edit-product/:id', component: EditProductsComponent },
+  { path: 'carousel-management',component: CarouselManagementComponent},
+  { path: 'contactInfo-management', component: ContactInfoManagementComponent},
   { path: '**', redirectTo:'', pathMatch: 'full'},
   
 ];

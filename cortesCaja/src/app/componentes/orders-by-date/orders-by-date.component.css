@@ -3,3 +3,48 @@
     box-shadow: 0 1px 8px 0 rgba(67, 67, 67, 0.6), 0 1px 25px 0 rgba(0, 0, 0, 0.168);
     margin-bottom: 20px;
 }
+/* Estilos para el título principal */
+h2 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    color: #0556cf; /* Azul primario */
+  }
+  
+  /* Tarjeta del formulario */
+  .card {
+    border-radius: 10px;
+    background-color: #f9f9f9;
+  }
+  
+  /* Encabezados de la tabla */
+  .table thead {
+    background-color: #0556cf; /* Azul primario */
+    color: white;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  /* Filas alternas */
+  .table tbody tr:nth-child(odd) {
+    background-color: #f3f8ff; /* Azul muy claro */
+  }
+  
+  .table tbody tr:nth-child(even) {
+    background-color: #ffffff;
+  }
+  
+  /* Resaltar bordes de la tabla */
+  .table {
+    border: 1px solid #dcdcdc;
+  }
+  
+  /* Botón */
+  .btn-primary {
+    background-color: #0556cf;
+    border: none;
+  }
+  
+  .btn-primary:hover {
+    background-color: #0A75E6;
+  }
+  

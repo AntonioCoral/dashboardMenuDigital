@@ -10,9 +10,9 @@ import { Order } from 'src/app/interfaces/order';
 })
 export class SocketService {
   private socket: Socket;
-
+//  this.socket = io('https://codeconnectivity.com/', {
   constructor() {
-    this.socket = io('https://codeconnectivity.com/', {
+    this.socket = io('http://localhost:500/', {
       path: '/socket.io',
       reconnection: true,
       reconnectionAttempts: Infinity,

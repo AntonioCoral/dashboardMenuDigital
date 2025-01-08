@@ -1,35 +1,50 @@
-<!-- src/app/components/add-category/add-category.component.html -->
-<div class="container mt-5">
-    <div class="row justify-content-center">
-      <div class="col-md-6">
-        <h2 class="text-center">Agregar Categoría</h2>
-        <form [formGroup]="form" (ngSubmit)="addCategory()">
-          <div class="mb-3">
-            <label for="name" class="form-label">Nombre de la Categoría</label>
-            <input type="text" id="name" formControlName="name" class="form-control">
-            <div *ngIf="form.get('name')?.invalid && form.get('name')?.touched" class="text-danger">
-              El nombre es requerido.
-            </div>
-          </div>
-          <button [disabled]="loading" class="btn btn-primary w-100">Guardar</button>
-        </form>
-      </div>
-    </div>
+<app-navbar></app-navbar>
+<div class="min-h-screen bg-gray-100 p-4">
+  <!-- Botón para volver -->
+  <div class="mb-4">
+    <button (click)="goBack()" class="flex items-center px-2 py-2 bg-white text-gray-500 rounded-full hover:text-yellow-600 shadow-sm">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+      </svg>
+    </button>
   </div>
 
-  <!-- src/app/components/list-categories/list-categories.component.html -->
-<div class="container mt-5">
-  <h2 class="text-center">Categorías</h2>
-  <div class="row">
-    <div *ngFor="let category of categories" class="col-md-4">
-      <div class="card mb-3">
-        <div class="card-body">
-          <h5 class="card-title">{{ category.name }}</h5>
-          <button (click)="deleteCategory(category.id)" class="btn btn-danger w-100">Eliminar</button>
+  <!-- Contenido principal -->
+  <div class="container">
+    <!-- Card para agregar nueva categoría -->
+    <div class="card bg-white p-3 rounded-lg shadow-sm mb-4">
+      <h2 class="text-center font-bold text-lg mb-4">Agregar Categoría</h2>
+      <form [formGroup]="form" (ngSubmit)="addCategory()">
+        <div class="form-floating mb-3">
+          <input
+            type="text"
+            id="name"
+            formControlName="name"
+            class="form-control"
+            placeholder="Nombre de la Categoría"
+          />
+          <label for="name" class="text-gray-500">Nombre de la Categoría</label>
+        </div>
+        <div *ngIf="form.get('name')?.invalid && form.get('name')?.touched" class="text-danger text-sm">
+          El nombre es requerido.
+        </div>
+        <button [disabled]="loading" class="btn btn-success w-100 mt-2">Agregar</button>
+      </form>
+    </div>
+
+    <!-- Card para lista de categorías existentes -->
+    <div class="card bg-white p-4 rounded-lg shadow-sm">
+      <h2 class="text-center font-bold text-lg mb-4">Tus Categorías</h2>
+      <div class="row">
+        <div *ngFor="let category of categories" class="col-md-4">
+          <div class="card bg-gray-50 mb-3 rounded-lg shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title font-medium text-gray-600">{{ category.name }}</h5>
+              <button (click)="deleteCategory(category.id)" class="btn btn-danger w-100">Eliminar</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
-
-  

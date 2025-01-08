@@ -1,20 +1,23 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { CorteCaja, PedidosTransitos } from '../interfaces/corte';
+import { AuthService } from './auth';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CorteCajaService {
-  private apiUrl = 'https://codeconnectivity.com/api/api/caja/';
-
-  constructor(private http: HttpClient) {}
+ //private apiUrl = 'https://codeconnectivity.com/api/api/caja/';
+   private apiUrl = 'http://localhost:500/api/caja/';
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   // Método para crear un nuevo corte de caja
   crearCorte(corte: CorteCaja): Observable<CorteCaja> {
-    return this.http.post<CorteCaja>(this.apiUrl, corte)
+    
+    return this.http.post<CorteCaja>(this.apiUrl, corte, {
+    })
       .pipe(
         catchError(this.handleError)
       );
@@ -28,19 +31,32 @@ export class CorteCajaService {
       );
   }
 
-  getCortesByDate(date: string): Observable<CorteCaja[]> {
-  return this.http.get<CorteCaja[]>(`${this.apiUrl}date/${date}`)
-    .pipe(
+  getCortesByDate(date: string, subdomain: string): Observable<CorteCaja[]> {
+    const token = this.authService.getToken();
+    const companyId = this.authService.getCompanyId();
+
+    if (!token || !companyId) {
+      throw new Error('No autorizado: falta token o companyId');
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+    return this.http.get<CorteCaja[]>(`${this.apiUrl}date/${date}`, {
+      params: { companyId: companyId.toString() }, // Envía el companyId como parámetr
+    }).pipe(
       map(cortes => cortes.map(corte => ({
         ...corte,
         denominaciones: corte.denominaciones.map(denom => ({
-          id: denom.id, // Asegúrate de que el id se mantenga
+          id: denom.id,
           denominacion: denom.denominacion,
           cantidad: denom.cantidad
         }))
       })))
     );
-}
+  }
+  
+  
 
 
   getUltimoCorteByCaja(numeroCaja: number): Observable<CorteCaja> {

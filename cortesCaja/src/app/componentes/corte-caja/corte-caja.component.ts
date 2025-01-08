@@ -45,6 +45,7 @@ export class CorteCajaComponent implements OnInit {
   resultado: string = '';
   startTime: string = '07:00'; // Hora de inicio predeterminada
   endTime: string = '15:00'; // Hora de fin predeterminada
+  subdomain: string = ''; // Subdominio dinámico
 
   constructor(
     private corteService: CorteCajaService,
@@ -54,18 +55,43 @@ export class CorteCajaComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.getSubdomain();
     this.cargarTransferencias();
     this.cargarPedidosTransito();
   }
 
+  getSubdomain(): void {
+    const hostname = window.location.hostname; // Obtiene el hostname
+    const parts = hostname.split('.'); // Divide el hostname en partes por '.'
+  
+    if (hostname === 'localhost') {
+      // Si estamos en localhost, intenta detectar un subdominio basado en la URL
+      const match = window.location.href.match(/\/\/(.*?)\.localhost/);
+      this.subdomain = match ? match[1] : 'default'; // Usa "default" si no hay subdominio
+    } else if (parts.length > 2) {
+      // Si el hostname tiene más de 2 partes, asume que hay un subdominio
+      this.subdomain = parts[0];
+    } else {
+      this.subdomain = 'default'; // Usa "default" si no se detecta subdominio
+    }
+  
+    console.log('Subdominio detectado:', this.subdomain);
+  }
+  
+
   onSubmit(): void {
-    
     if (this.selectedDate) {
-      this.corteService.getCortesByDate(this.selectedDate).subscribe((data: CorteCaja[]) => {
-        this.cortes = data;
+      this.corteService.getCortesByDate(this.selectedDate, this.subdomain).subscribe({
+        next: (data: CorteCaja[]) => {
+          this.cortes = data;
+        },
+        error: (err) => {
+          console.error('Error al obtener cortes:', err);
+        },
       });
     }
   }
+  
 
   cargarTransferencias(): void {
     const today = this.datePipe.transform(new Date(), 'yyyy-MM-dd')!; // Formato de fecha 'YYYY-MM-DD'

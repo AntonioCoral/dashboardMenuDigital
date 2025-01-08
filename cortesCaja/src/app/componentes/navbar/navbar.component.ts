@@ -13,7 +13,7 @@ export class NavbarComponent implements OnInit {
   authCredentials = { username: '', password: '' };
   passwordVisible = false;
   loginForm: FormGroup;
-
+  currentRoute: string = '';
   constructor(
     private fb: FormBuilder,
     private router: Router, 
@@ -26,7 +26,11 @@ export class NavbarComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.router.events.subscribe(() => {
+      this.currentRoute = this.router.url; // Obtiene la URL actual
+    });
+  }
 
   openAuthModal() {
     this.closeOffcanvasMenu();

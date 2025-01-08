@@ -181,7 +181,7 @@ export class ListOrdersComponent implements OnInit, OnDestroy {
     switch (numeroCaja) {
       case 2:
         return 'caja-amarillo-claro';
-      case 3:
+      case 6:
         return 'caja-azul-claro';
       case 4:
         return 'caja-verde-claro';

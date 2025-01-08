@@ -3,6 +3,7 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { EcommerceService } from 'src/app/services/ecommerce.service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-admin-products',
@@ -22,7 +23,8 @@ export class AdminProductsComponent implements OnInit {
     private fb: FormBuilder,
     private ecommerceService: EcommerceService,
     private toastr: ToastrService,
-    private router: Router
+    private router: Router,
+    private location: Location
   ) {
     // Inicialización del formulario con opciones de precio como FormArray
     this.form = this.fb.group({
@@ -168,5 +170,9 @@ export class AdminProductsComponent implements OnInit {
         this.toastr.error('Error en la búsqueda de productos');
       });
     }
+  }
+
+  goBack(): void {
+    this.location.back(); // Navega hacia atrás en el historial del navegador
   }
 }

@@ -1,0 +1,87 @@
+<app-navbar></app-navbar>
+<div class="min-h-screen bg-gray-100 p-4">
+    <!-- Botón para volver -->
+    <div class="mb-4">
+      <button (click)="goBack()" class="flex items-center px-2 py-2 bg-white text-gray-500 rounded-full hover:text-yellow-600 shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+        </svg>
+      </button>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="container">
+          <h2 class="text-center">Gestión de Información de Contacto</h2>
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <label for="phoneNumber">Número de Teléfono</label>
+          <input
+            id="phoneNumber"
+            type="text"
+            class="form-control"
+            [(ngModel)]="phoneNumber"
+            placeholder="Ingresa el número de teléfono"
+          />
+      
+          <label for="location">Ubicación</label>
+          <input
+            id="location"
+            type="text"
+            class="form-control"
+            [(ngModel)]="ubication"
+            placeholder="Ingresa la ubicación de la empresa"
+          />
+
+          <label for="openedTime">Horario laboral</label>
+          <input
+            id="openedTime"
+            type="text"
+            class="form-control"
+            [(ngModel)]="openedTime"
+            placeholder="Ingresa el horario laboral"
+          />
+      
+          <label for="bankAccount">Número de Tarjeta</label>
+          <input
+            id="bankAccount"
+            type="text"
+            class="form-control"
+            [(ngModel)]="bankAccount"
+            placeholder="Ingresa el número de tarjeta"
+          />
+      
+          <label for="clabe">CLABE Interbancaria</label>
+          <input
+            id="clabe"
+            type="text"
+            class="form-control"
+            [(ngModel)]="clabe"
+            placeholder="Ingresa la CLABE interbancaria"
+          />
+      
+          <label for="bankName">Nombre del Banco</label>
+          <input
+            id="bankName"
+            type="text"
+            class="form-control"
+            [(ngModel)]="bankName"
+            placeholder="Ingresa el nombre del banco"
+          />
+      
+          <label for="accountHolder">Titular de la Cuenta</label>
+          <input
+            id="accountHolder"
+            type="text"
+            class="form-control"
+            [(ngModel)]="accountHolder"
+            placeholder="Ingresa el nombre del titular"
+          />
+      
+          <button class="btn btn-primary mt-2" (click)="saveContactInfo()">
+            Guardar Información
+          </button>
+        </div>
+        </div>
+      </div>
+    </div>

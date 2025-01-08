@@ -38,6 +38,10 @@ const orden_1 = __importDefault(require("../models/orden"));
 const TIMEZONE = 'America/Mexico_City';
 const createCaja = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const transaction = yield conecction_1.default.transaction();
+    const companyId = req.companyId; // Obtén el companyId del middleware
+    if (!companyId) {
+        return res.status(401).json({ message: 'Acceso no autorizado' });
+    }
     try {
         const { fecha, nombre, numeroCaja, totalEfectivo, totalTransferencias, totalRetiros, totalPagosTarjeta, totalPedidoTransito, ventaTotal, recargas, denominaciones, transferencias, retiros, pagosTarjeta, pedidosTransitos } = req.body;
         console.log("Datos recibidos:", req.body);
@@ -51,7 +55,8 @@ const createCaja = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             totalPagosTarjeta,
             totalPedidoTransito,
             ventaTotal,
-            recargas
+            recargas,
+            companyId
         }, { transaction });
         console.log("Caja creada:", nuevaCaja);
         // Validar y procesar denominaciones
@@ -135,34 +140,34 @@ const createCaja = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.createCaja = createCaja;
 const getCortesByDate = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { date } = req.params;
+    const companyId = req.companyId; // Obtén el companyId del middleware
+    if (!companyId) {
+        return res.status(401).json({ message: 'Acceso no autorizado' });
+    }
     try {
         const startDate = moment_timezone_1.default.tz(date, TIMEZONE).startOf('day').toDate();
         const endDate = moment_timezone_1.default.tz(date, TIMEZONE).endOf('day').toDate();
         const cortes = yield caja_1.default.findAll({
             where: {
+                companyId,
                 fecha: {
                     [sequelize_1.Op.gte]: startDate,
-                    [sequelize_1.Op.lte]: endDate
-                }
+                    [sequelize_1.Op.lte]: endDate,
+                },
             },
             include: [
                 { model: denominaciones_1.default, as: 'denominaciones' },
                 { model: transferencia_1.default, as: 'transferencias' },
                 { model: retiros_1.default, as: 'retiros' },
                 { model: pagostarjeta_1.default, as: 'pagosTarjeta' },
-                { model: pedidostransito_1.default, as: 'pedidosTransitos' }
-            ]
+                { model: pedidostransito_1.default, as: 'pedidosTransitos' },
+            ],
         });
         res.json(cortes);
     }
     catch (error) {
-        console.error("Error al obtener cortes:", error);
-        if (error instanceof Error) {
-            res.status(500).json({ error: error.message });
-        }
-        else {
-            res.status(500).json({ error: 'An unknown error occurred.' });
-        }
+        console.error('Error al obtener cortes:', error);
+        res.status(500).json({ message: 'Error interno del servidor' });
     }
 });
 exports.getCortesByDate = getCortesByDate;

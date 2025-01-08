@@ -8,7 +8,7 @@ import { IProduct, ICategory, IProductOption } from '../interfaces/interface';
 })
 export class EcommerceService {
 
-
+  //private apiUrl = 'https://codeconnectivity.com/apilinea/api/'; // Reemplaza esto con la URL real de tu API
   private apiUrl = 'https://codeconnectivity.com/apilinea/api/'; // Reemplaza esto con la URL real de tu API
 
   constructor(private http: HttpClient) { }

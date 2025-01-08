@@ -12,19 +12,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTotalEfectivoByOrderRange = exports.getPedidosTransitoByCajaAndTimeRange = exports.getTransferenciasByCajaAndTimeRange = exports.checkOrderNumberExists = exports.getLastOrderNumber = exports.getOrdenesByDate = exports.getOrdenesByDelivery = exports.updateOrden = exports.postOrden = exports.deleteOrden = exports.getOrden = exports.getOrdenes = void 0;
+exports.getPedidosTransitoByCajaAndTimeRange = exports.getTransferenciasByCajaAndTimeRange = exports.checkOrderNumberExists = exports.getLastOrderNumber = exports.getOrdenesByDate = exports.getOrdenesByDelivery = exports.updateOrden = exports.postOrden = exports.deleteOrden = exports.getOrden = exports.getOrdenes = void 0;
 const orden_1 = __importDefault(require("../models/orden"));
 const sequelize_1 = require("sequelize");
 const moment_timezone_1 = __importDefault(require("moment-timezone"));
 // Configurar la zona horaria
 const TIMEZONE = 'America/Mexico_City';
 const getOrdenes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const companyId = req.companyId; // Obtén el companyId del middleware
+    if (!companyId) {
+        return res.status(401).json({ message: 'Acceso no autorizado' });
+    }
     try {
         const today = (0, moment_timezone_1.default)().tz(TIMEZONE).format('YYYY-MM-DD');
         const startOfDay = moment_timezone_1.default.tz(today, TIMEZONE).startOf('day').toDate();
         const endOfDay = moment_timezone_1.default.tz(today, TIMEZONE).endOf('day').toDate();
         const listOrden = yield orden_1.default.findAll({
             where: {
+                companyId,
                 createdAt: {
                     [sequelize_1.Op.gte]: startOfDay,
                     [sequelize_1.Op.lte]: endOfDay
@@ -41,8 +46,17 @@ const getOrdenes = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.getOrdenes = getOrdenes;
 const getOrden = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
+    const companyId = req.companyId;
+    if (!companyId) {
+        return res.status(401).json({ message: 'Acceso no autorizado' });
+    }
     try {
-        const orden = yield orden_1.default.findByPk(id);
+        const orden = yield orden_1.default.findOne({
+            where: {
+                id,
+                companyId
+            }
+        });
         if (orden) {
             res.json(orden);
         }
@@ -72,14 +86,18 @@ const deleteOrden = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.deleteOrden = deleteOrden;
 const postOrden = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { body } = req;
+    const companyId = req.companyId;
     const io = req.app.get('socketio');
+    if (!companyId) {
+        return res.status(401).json({ message: 'Acceso no autorizado' });
+    }
     try {
-        const newOrder = yield orden_1.default.create(body);
-        io.emit('orderAdded', newOrder); // Emitir evento de orden agregada
+        const newOrder = yield orden_1.default.create(Object.assign(Object.assign({}, body), { companyId }));
+        io.emit('orderAdded', newOrder);
         res.json({ msg: 'Orden agregada exitosamente', order: newOrder });
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ msg: 'Ocurrió un error, intente más tarde' });
     }
 });
@@ -87,12 +105,18 @@ exports.postOrden = postOrden;
 const updateOrden = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { body } = req;
     const { id } = req.params;
+    const companyId = req.companyId;
     const io = req.app.get('socketio');
     try {
-        const orden = yield orden_1.default.findByPk(id);
+        const orden = yield orden_1.default.findOne({
+            where: {
+                id,
+                companyId
+            }
+        });
         if (orden) {
             yield orden.update(body);
-            io.emit('orderUpdated', orden); // Emitir evento de orden actualizada
+            io.emit('orderUpdated', orden);
             res.json({ msg: 'Orden actualizada con éxito', order: orden });
         }
         else {
@@ -100,13 +124,17 @@ const updateOrden = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ msg: 'Ocurrió un error, intente más tarde' });
     }
 });
 exports.updateOrden = updateOrden;
 const getOrdenesByDelivery = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { nameDelivery } = req.params;
+    const companyId = req.companyId;
+    if (!companyId) {
+        return res.status(401).json({ message: 'Acceso no autorizado' });
+    }
     const today = (0, moment_timezone_1.default)().tz(TIMEZONE).format('YYYY-MM-DD');
     const startOfDay = moment_timezone_1.default.tz(today, TIMEZONE).startOf('day').toDate();
     const endOfDay = moment_timezone_1.default.tz(today, TIMEZONE).endOf('day').toDate();
@@ -114,6 +142,7 @@ const getOrdenesByDelivery = (req, res) => __awaiter(void 0, void 0, void 0, fun
         const ordenes = yield orden_1.default.findAll({
             where: {
                 nameDelivery,
+                companyId,
                 createdAt: {
                     [sequelize_1.Op.gte]: startOfDay,
                     [sequelize_1.Op.lte]: endOfDay
@@ -123,18 +152,23 @@ const getOrdenesByDelivery = (req, res) => __awaiter(void 0, void 0, void 0, fun
         res.json(ordenes);
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ msg: 'Ocurrió un error, intente más tarde' });
     }
 });
 exports.getOrdenesByDelivery = getOrdenesByDelivery;
 const getOrdenesByDate = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { date } = req.params;
+    const companyId = req.companyId;
+    if (!companyId) {
+        return res.status(401).json({ message: 'Acceso no autorizado' });
+    }
     try {
         const startOfDay = moment_timezone_1.default.tz(date, TIMEZONE).startOf('day').toDate();
         const endOfDay = moment_timezone_1.default.tz(date, TIMEZONE).endOf('day').toDate();
         const orders = yield orden_1.default.findAll({
             where: {
+                companyId,
                 createdAt: {
                     [sequelize_1.Op.gte]: startOfDay,
                     [sequelize_1.Op.lte]: endOfDay
@@ -151,11 +185,16 @@ const getOrdenesByDate = (req, res) => __awaiter(void 0, void 0, void 0, functio
 exports.getOrdenesByDate = getOrdenesByDate;
 const getLastOrderNumber = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { date } = req.params;
+    const companyId = req.companyId;
+    if (!companyId) {
+        return res.status(401).json({ message: 'Acceso no autorizado' });
+    }
     try {
         const startOfDay = moment_timezone_1.default.tz(date, TIMEZONE).startOf('day').toDate();
         const endOfDay = moment_timezone_1.default.tz(date, TIMEZONE).endOf('day').toDate();
         const lastOrder = yield orden_1.default.findOne({
             where: {
+                companyId,
                 createdAt: {
                     [sequelize_1.Op.gte]: startOfDay,
                     [sequelize_1.Op.lte]: endOfDay
@@ -174,18 +213,18 @@ const getLastOrderNumber = (req, res) => __awaiter(void 0, void 0, void 0, funct
 exports.getLastOrderNumber = getLastOrderNumber;
 const checkOrderNumberExists = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { orderNumber } = req.params;
+    const companyId = req.companyId;
+    if (!companyId) {
+        return res.status(401).json({ message: 'Acceso no autorizado' });
+    }
     try {
         const order = yield orden_1.default.findOne({
             where: {
-                numerOrden: orderNumber
+                numerOrden: orderNumber,
+                companyId
             }
         });
-        if (order) {
-            res.json(true);
-        }
-        else {
-            res.json(false);
-        }
+        res.json(!!order);
     }
     catch (error) {
         console.error(error);
@@ -195,24 +234,25 @@ const checkOrderNumberExists = (req, res) => __awaiter(void 0, void 0, void 0, f
 exports.checkOrderNumberExists = checkOrderNumberExists;
 const getTransferenciasByCajaAndTimeRange = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { numeroCaja, date, startTime, endTime } = req.params;
+    const companyId = req.companyId;
+    if (!companyId) {
+        return res.status(401).json({ message: 'Acceso no autorizado' });
+    }
     try {
-        // Combina la fecha y las horas específicas para formar los DateTime correctos en la zona horaria local
         const startDateTimeLocal = moment_timezone_1.default.tz(`${date} ${startTime}`, TIMEZONE);
         const endDateTimeLocal = moment_timezone_1.default.tz(`${date} ${endTime}`, TIMEZONE);
-        // Convierte a UTC para hacer la consulta en la base de datos
         const startDateTimeUTC = startDateTimeLocal.clone().utc().toDate();
         const endDateTimeUTC = endDateTimeLocal.clone().utc().toDate();
-        console.log('Start DateTime UTC:', startDateTimeUTC);
-        console.log('End DateTime UTC:', endDateTimeUTC);
         const transferencias = yield orden_1.default.findAll({
             where: {
                 numeroCaja,
+                companyId,
                 createdAt: {
                     [sequelize_1.Op.gte]: startDateTimeUTC,
-                    [sequelize_1.Op.lte]: endDateTimeUTC,
+                    [sequelize_1.Op.lte]: endDateTimeUTC
                 },
                 transferenciaPay: {
-                    [sequelize_1.Op.gt]: 0 // Sólo selecciona órdenes con transferencias mayores a 0
+                    [sequelize_1.Op.gt]: 0
                 }
             },
             attributes: ['transferenciaPay']
@@ -227,27 +267,27 @@ const getTransferenciasByCajaAndTimeRange = (req, res) => __awaiter(void 0, void
 exports.getTransferenciasByCajaAndTimeRange = getTransferenciasByCajaAndTimeRange;
 const getPedidosTransitoByCajaAndTimeRange = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { numeroCaja, date, startTime, endTime } = req.params;
+    const companyId = req.companyId;
+    if (!companyId) {
+        return res.status(401).json({ message: 'Acceso no autorizado' });
+    }
     try {
-        // Combina la fecha y las horas específicas para formar los DateTime correctos en la zona horaria local
         const startDateTimeLocal = moment_timezone_1.default.tz(`${date} ${startTime}`, TIMEZONE);
         const endDateTimeLocal = moment_timezone_1.default.tz(`${date} ${endTime}`, TIMEZONE);
-        // Convierte a UTC para hacer la consulta en la base de datos
         const startDateTimeUTC = startDateTimeLocal.clone().utc().toDate();
         const endDateTimeUTC = endDateTimeLocal.clone().utc().toDate();
-        console.log('Start DateTime UTC:', startDateTimeUTC);
-        console.log('End DateTime UTC:', endDateTimeUTC);
         const pedidosTransito = yield orden_1.default.findAll({
             where: {
                 numeroCaja,
+                companyId,
                 createdAt: {
                     [sequelize_1.Op.gte]: startDateTimeUTC,
-                    [sequelize_1.Op.lte]: endDateTimeUTC,
+                    [sequelize_1.Op.lte]: endDateTimeUTC
                 },
                 status: 'transito'
             },
             attributes: ['efectivo', 'nameClient']
         });
-        console.log('Pedidos en tránsito encontrados:', pedidosTransito.length);
         res.json(pedidosTransito);
     }
     catch (error) {
@@ -256,35 +296,3 @@ const getPedidosTransitoByCajaAndTimeRange = (req, res) => __awaiter(void 0, voi
     }
 });
 exports.getPedidosTransitoByCajaAndTimeRange = getPedidosTransitoByCajaAndTimeRange;
-const getTotalEfectivoByOrderRange = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { rangoInicio, rangoFin } = req.query;
-    // Obtén la fecha actual
-    const today = new Date();
-    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
-    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
-    try {
-        console.log('Rango de órdenes:', rangoInicio, rangoFin);
-        console.log('Fecha inicio del día:', startOfDay);
-        console.log('Fecha fin del día:', endOfDay);
-        // Consulta para sumar el total de efectivo
-        const totalEfectivo = yield orden_1.default.sum('efectivo', {
-            where: {
-                numerOrden: {
-                    [sequelize_1.Op.between]: [rangoInicio, rangoFin]
-                },
-                createdAt: {
-                    [sequelize_1.Op.between]: [startOfDay, endOfDay]
-                }
-            }
-        });
-        console.log('Total efectivo calculado:', totalEfectivo);
-        res.json({
-            totalEfectivo: totalEfectivo || 0
-        });
-    }
-    catch (error) {
-        console.error('Error en la consulta:', error);
-        res.status(500).json({ message: 'Error al obtener el total de efectivo', error });
-    }
-});
-exports.getTotalEfectivoByOrderRange = getTotalEfectivoByOrderRange;

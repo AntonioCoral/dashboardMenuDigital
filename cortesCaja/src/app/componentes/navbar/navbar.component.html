@@ -1,46 +1,82 @@
-<nav class="navbar navbar-bg-fixed-top">
+<nav class="navbar navbar-expand-lg  bg-white shadow-sm p-3">
   <div class="container-fluid">
-    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+    <!-- Botón para desplegar Offcanvas -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
       <span class="navbar-toggler-icon"></span>
     </button>
+
+    <!-- Offcanvas -->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
       <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="offcanvasNavbarLabel">MINI SUPER LA TIENDITA 24/7</h5>
+        <h5 class="offcanvas-title fw-bold text-primary" id="offcanvasNavbarLabel">CONNECTIVITY CODE</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
       <div class="offcanvas-body">
-        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+        <ul class="navbar-nav">
+          <!-- Sección Cajas -->
+          <hr class="my-2">
+          <div class="section-title">
+            <h6>Cajas</h6>
+          </div>
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" routerLink="/orders-by-date">Reportes de ordenes</a> 
+            <a class="nav-link" [class.active]="currentRoute === '/orders-by-date'" routerLink="/orders-by-date">
+              <i class="bi bi-bar-chart-line-fill me-2"></i> Reportes de órdenes
+            </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" (click)="openAuthModal()">Cortes de caja</a>
+            <a class="nav-link" [class.active]="currentRoute === '/corte-caja'" (click)="openAuthModal()">
+              <i class="bi bi-cash-stack me-2"></i> Cortes de caja
+            </a>
+          </li>
+        
+          <!-- Sección Órdenes -->
+          <hr class="my-2">
+          <div class="section-title">
+            <h6>Órdenes</h6>
+          </div>
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="currentRoute === '/list-orders'" routerLink="/list-orders">
+              <i class="bi bi-list-check me-2"></i> Mis órdenes
+            </a>
+          </li>
+        
+          <!-- Sección Administrar -->
+          <hr class="my-2">
+          <div class="section-title">
+            <h6>Administrar</h6>
+          </div>
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="currentRoute === '/admin-categories'" routerLink="/admin-categories">
+              <i class="bi bi-tags me-2"></i> Categorías
+            </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink="/list-orders">Ordenes</a>
+            <a class="nav-link" [class.active]="currentRoute === '/admin-products'" routerLink="/admin-products">
+              <i class="bi bi-box-seam me-2"></i> Productos
+            </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink="/admin-categories">Administrar categorías</a>
+            <a class="nav-link" [class.active]="currentRoute === '/carousel-management'" routerLink="/carousel-management">
+              <i class="bi bi-image me-2"></i> Banners
+            </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink="/admin-products">Administrar productos</a>
+            <a class="nav-link" [class.active]="currentRoute === '/contactInfo-management'" routerLink="/contactInfo-management">
+              <i class="bi bi-info-circle me-2"></i> Información de contacto
+            </a>
           </li>
-          
         </ul>
+        
       </div>
     </div>
-    <img src="./assets/logo2.png" style="width: 90px; height: 60px; margin-left: 5%;">
-    <div class="collapse navbar-collapse" id="navbarColor02">
-  </div>
- 
-    <button type="button" class="btn btn-outline-info mt-3" 
-    style="font-size: 22px; width: 120px; height: 50px; font-family:'Raleway', sans-serif; font-weight: bold; margin-right: 1.5%;" routerLink="/">Salir</button>
 
+    <!-- Botones adicionales -->
+    <div class="d-flex align-items-center">
+      <img src="./assets/logoCode.png" alt="Logo" style="width: 90px; height: 60px;" class="me-3">
+      <button type="button"  class="btn btn-outline-info me-2" routerLink="/">
+        <i class="bi bi-box-arrow-right me-1"></i> Salir
+      </button>
 
-    <button type="button" class="btn btn-outline-success mt-2" 
-    style="font-size: 22px; width: 120px; height: 50px; font-family:'Raleway', sans-serif; font-weight: bold; margin-right: 3%;" routerLink="/orders-by-date">Reportes</button>
-
-    <div class="collapse " id="navbarColor02">
     </div>
   </div>
 </nav>
@@ -82,5 +118,3 @@
     </div>
   </div>
 </div>
-
-

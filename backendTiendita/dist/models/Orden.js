@@ -1,66 +1,86 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const conecction_1 = __importDefault(require("../db/conecction"));
-const Orden = conecction_1.default.define('Orden', {
+const company_1 = __importDefault(require("./company")); // Importar el modelo de Company
+// Clase Orden extendiendo Sequelize Model
+class Orden extends sequelize_1.Model {
+}
+// Inicialización del modelo
+Orden.init({
+    id: {
+        type: sequelize_1.DataTypes.INTEGER.UNSIGNED,
+        autoIncrement: true,
+        primaryKey: true,
+    },
+    companyId: {
+        type: sequelize_1.DataTypes.INTEGER.UNSIGNED,
+        allowNull: false,
+        references: {
+            model: company_1.default, // Relación con Company
+            key: 'id',
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    },
     numerOrden: {
-        type: sequelize_1.DataTypes.DOUBLE
+        type: sequelize_1.DataTypes.DOUBLE,
+        allowNull: true,
     },
     numeroCaja: {
-        type: sequelize_1.DataTypes.DOUBLE
+        type: sequelize_1.DataTypes.DOUBLE,
+        allowNull: true,
     },
     nameClient: {
-        type: sequelize_1.DataTypes.STRING
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: true,
     },
     direction: {
-        type: sequelize_1.DataTypes.STRING
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: true,
     },
     efectivo: {
-        type: sequelize_1.DataTypes.DOUBLE
+        type: sequelize_1.DataTypes.DOUBLE,
+        allowNull: true,
     },
     montoCompra: {
-        type: sequelize_1.DataTypes.DOUBLE
+        type: sequelize_1.DataTypes.DOUBLE,
+        allowNull: true,
     },
     transferenciaPay: {
-        type: sequelize_1.DataTypes.DOUBLE
+        type: sequelize_1.DataTypes.DOUBLE,
+        allowNull: true,
     },
     nameDelivery: {
-        type: sequelize_1.DataTypes.STRING
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: true,
     },
     recharge: {
-        type: sequelize_1.DataTypes.STRING
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: true,
     },
     montoServicio: {
-        type: sequelize_1.DataTypes.DOUBLE
+        type: sequelize_1.DataTypes.DOUBLE,
+        allowNull: true,
     },
     itemOrder: {
-        type: sequelize_1.DataTypes.STRING
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: true,
     },
     status: {
-        type: sequelize_1.DataTypes.STRING
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: true,
     },
     createdAt: {
         type: sequelize_1.DataTypes.DATE,
-        defaultValue: sequelize_1.DataTypes.NOW
-    }
+        defaultValue: sequelize_1.DataTypes.NOW,
+    },
 }, {
-    updateAt: false
+    sequelize: conecction_1.default,
+    modelName: 'Orden',
+    tableName: 'Ordenes',
 });
-//sincronizamos el modelo a la base de datos
-(() => __awaiter(void 0, void 0, void 0, function* () {
-    yield conecction_1.default.sync();
-    console.log('Modelo sincronizado con la base de datos');
-}))();
 exports.default = Orden;
