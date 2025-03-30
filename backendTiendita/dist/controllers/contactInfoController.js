@@ -17,7 +17,14 @@ const contactInfo_model_1 = __importDefault(require("../models/contactInfo.model
 // Obtener la información de contacto
 const getContactInfo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const contactInfo = yield contactInfo_model_1.default.findOne({ where: {}, order: [['id', 'DESC']] });
+        const companyId = req.companyId;
+        if (!companyId) {
+            return res.status(403).json({ message: 'Acceso no autorizado: Compañía no encontrada' });
+        }
+        const contactInfo = yield contactInfo_model_1.default.findOne({
+            where: { companyId },
+            order: [['id', 'DESC']],
+        });
         res.status(200).json(contactInfo || {});
     }
     catch (error) {
@@ -27,9 +34,8 @@ const getContactInfo = (req, res) => __awaiter(void 0, void 0, void 0, function*
 exports.getContactInfo = getContactInfo;
 // Actualizar o crear la información de contacto
 const updateContactInfo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     try {
-        const companyId = (_a = req.company) === null || _a === void 0 ? void 0 : _a.id;
+        const companyId = req.companyId;
         if (!companyId) {
             return res.status(403).json({ message: 'Acceso no autorizado: Compañía no encontrada' });
         }

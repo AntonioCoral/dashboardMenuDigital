@@ -9,6 +9,10 @@ import Company from '../models/company'; // Importar el modelo de Company
 import User from '../models/user'; // Importar el modelo de User
 import Orden from '../models/orden';
 import ContactInfo from '../models/contactInfo.model';
+import CarouselImage from './carouselImage.model';
+import Product from './Producto';
+import ProductOption from './ProductOption';
+import Category from './Categoria';
 
 // Definir las relaciones entre los modelos
 Caja.hasMany(Denominaciones, { as: 'denominaciones', foreignKey: 'cajaId' });
@@ -38,8 +42,20 @@ Orden.belongsTo(Company, { foreignKey: 'companyId', as: 'company' }); // Relaci�
 Company.hasMany(ContactInfo, { foreignKey: 'companyId', as: 'contact_Info' });
 ContactInfo.belongsTo(Company, { foreignKey: 'companyId', as: 'company' });
 
+// Relación con Company
+Company.hasMany(Product, { foreignKey: 'companyId', as: 'products' });
+Product.belongsTo(Company, { foreignKey: 'companyId', as: 'company' });
 
+// Relación entre Company y CarouselImage
+Company.hasMany(CarouselImage, { foreignKey: 'companyId', as: 'carouselImages' });
+CarouselImage.belongsTo(Company, { foreignKey: 'companyId', as: 'company' });
 
+// Relación de Company con Category
+Company.hasMany(Category, { foreignKey: 'companyId', as: 'categories' });
+Category.belongsTo(Company, { foreignKey: 'companyId', as: 'company' });
+
+Product.hasMany(ProductOption, { foreignKey: 'productId', as: 'options' }); // Cambié 'options' por 'productOptions'
+ProductOption.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
 // Sincronizar los modelos con la base de datos
 const syncDatabase = async () => {
   try {
@@ -50,4 +66,4 @@ const syncDatabase = async () => {
   }
 };
 
-export { Caja, Denominaciones, Transferencias, Retiros, PagosTarjeta, PedidosTransitos, Company, User, Orden,ContactInfo, syncDatabase };
+export { Caja, Denominaciones, Transferencias, Retiros, PagosTarjeta, PedidosTransitos, Company, User, Orden,ContactInfo, Product, ProductOption, syncDatabase };

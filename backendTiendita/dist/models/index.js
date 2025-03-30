@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.syncDatabase = exports.ContactInfo = exports.Orden = exports.User = exports.Company = exports.PedidosTransitos = exports.PagosTarjeta = exports.Retiros = exports.Transferencias = exports.Denominaciones = exports.Caja = void 0;
+exports.syncDatabase = exports.ProductOption = exports.Product = exports.ContactInfo = exports.Orden = exports.User = exports.Company = exports.PedidosTransitos = exports.PagosTarjeta = exports.Retiros = exports.Transferencias = exports.Denominaciones = exports.Caja = void 0;
 const conecction_1 = __importDefault(require("../db/conecction"));
 const caja_1 = __importDefault(require("../models/caja"));
 exports.Caja = caja_1.default;
@@ -34,6 +34,12 @@ const orden_1 = __importDefault(require("../models/orden"));
 exports.Orden = orden_1.default;
 const contactInfo_model_1 = __importDefault(require("../models/contactInfo.model"));
 exports.ContactInfo = contactInfo_model_1.default;
+const carouselImage_model_1 = __importDefault(require("./carouselImage.model"));
+const Producto_1 = __importDefault(require("./Producto"));
+exports.Product = Producto_1.default;
+const ProductOption_1 = __importDefault(require("./ProductOption"));
+exports.ProductOption = ProductOption_1.default;
+const Categoria_1 = __importDefault(require("./Categoria"));
 // Definir las relaciones entre los modelos
 caja_1.default.hasMany(denominaciones_1.default, { as: 'denominaciones', foreignKey: 'cajaId' });
 caja_1.default.hasMany(transferencia_1.default, { as: 'transferencias', foreignKey: 'cajaId' });
@@ -56,6 +62,17 @@ orden_1.default.belongsTo(company_1.default, { foreignKey: 'companyId', as: 'com
 // Relación con Company
 company_1.default.hasMany(contactInfo_model_1.default, { foreignKey: 'companyId', as: 'contact_Info' });
 contactInfo_model_1.default.belongsTo(company_1.default, { foreignKey: 'companyId', as: 'company' });
+// Relación con Company
+company_1.default.hasMany(Producto_1.default, { foreignKey: 'companyId', as: 'products' });
+Producto_1.default.belongsTo(company_1.default, { foreignKey: 'companyId', as: 'company' });
+// Relación entre Company y CarouselImage
+company_1.default.hasMany(carouselImage_model_1.default, { foreignKey: 'companyId', as: 'carouselImages' });
+carouselImage_model_1.default.belongsTo(company_1.default, { foreignKey: 'companyId', as: 'company' });
+// Relación de Company con Category
+company_1.default.hasMany(Categoria_1.default, { foreignKey: 'companyId', as: 'categories' });
+Categoria_1.default.belongsTo(company_1.default, { foreignKey: 'companyId', as: 'company' });
+Producto_1.default.hasMany(ProductOption_1.default, { foreignKey: 'productId', as: 'options' }); // Cambié 'options' por 'productOptions'
+ProductOption_1.default.belongsTo(Producto_1.default, { foreignKey: 'productId', as: 'product' });
 // Sincronizar los modelos con la base de datos
 const syncDatabase = () => __awaiter(void 0, void 0, void 0, function* () {
     try {

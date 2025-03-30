@@ -12,6 +12,10 @@ import fs from 'fs';
 import company from '../routes/company';
 import auth from '../routes/auth';
 import contactInfoRoutes from '../routes/contactInfoRoutes';
+import Category from './Categoria';
+import categoryRoutes from '../routes/categoryRoutes';
+import productRoutes from '../routes/productRoutes';
+import carouselRoutes from '../routes/carouselRoutes';
 
 
 dotenv.config();
@@ -66,7 +70,10 @@ class Server {
         this.app.use('/api/clientes', routesCliente);
         this.app.use('/api/caja', routesCaja);
         this.app.use('/api/companies', company);
+        this.app.use('/api/categories', categoryRoutes)
         this.app.use('/api/auth', auth); // Ruta de autenticación
+        this.app.use('/api/products',productRoutes)
+        this.app.use('/api/carousel', carouselRoutes)
         this.app.use('/api/contact', contactInfoRoutes);//Ruta para informacion de contacto
     }
 

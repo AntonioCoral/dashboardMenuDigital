@@ -46,7 +46,7 @@ class Caja extends Model<CajaAttributes, CajaCreationAttributes> implements Caja
 Caja.init(
   {
     id: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },

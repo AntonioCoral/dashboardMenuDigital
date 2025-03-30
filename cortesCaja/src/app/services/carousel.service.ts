@@ -16,8 +16,8 @@ export interface CarouselImage {
   providedIn: 'root',
 })
 export class CarouselService {
-  private baseUrl = 'http://localhost:4500/'; // Cambia la URL según tu configuración
-  private apiUrl = 'api/carousel/'
+  private baseUrl = 'http://localhost:500/'; // Cambia la URL según tu configuración
+  private apiUrl = 'api/carousel'
 
   constructor(private http: HttpClient) {}
 
@@ -27,8 +27,7 @@ export class CarouselService {
     return this.http.get<CarouselImage[]>(`${this.baseUrl}${this.apiUrl}/${section}`).pipe(
       map(images =>
         images.map(image => ({
-          ...image,
-          imageUrl: `${this.baseUrl}uploads/${image.imageUrl}`,
+          ...image,  
         }))
       )
     );

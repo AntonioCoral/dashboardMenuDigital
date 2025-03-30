@@ -25,6 +25,9 @@ const _1 = require(".");
 const company_1 = __importDefault(require("../routes/company"));
 const auth_1 = __importDefault(require("../routes/auth"));
 const contactInfoRoutes_1 = __importDefault(require("../routes/contactInfoRoutes"));
+const categoryRoutes_1 = __importDefault(require("../routes/categoryRoutes"));
+const productRoutes_1 = __importDefault(require("../routes/productRoutes"));
+const carouselRoutes_1 = __importDefault(require("../routes/carouselRoutes"));
 dotenv_1.default.config();
 class Server {
     constructor() {
@@ -61,7 +64,10 @@ class Server {
         this.app.use('/api/clientes', cliente_1.default);
         this.app.use('/api/caja', caja_1.default);
         this.app.use('/api/companies', company_1.default);
+        this.app.use('/api/categories', categoryRoutes_1.default);
         this.app.use('/api/auth', auth_1.default); // Ruta de autenticación
+        this.app.use('/api/products', productRoutes_1.default);
+        this.app.use('/api/carousel', carouselRoutes_1.default);
         this.app.use('/api/contact', contactInfoRoutes_1.default); //Ruta para informacion de contacto
     }
     middlewares() {
