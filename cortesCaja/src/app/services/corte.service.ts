@@ -10,7 +10,7 @@ import { AuthService } from './auth';
 })
 export class CorteCajaService {
  //private apiUrl = 'https://codeconnectivity.com/api/api/caja/';
-   private apiUrl = 'https://codeconnectivity.com/apilinea/api/caja/';
+   private apiUrl = 'https://codeconnectivity.com/api/api/caja/';
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   // Método para crear un nuevo corte de caja

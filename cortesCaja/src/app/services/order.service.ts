@@ -14,7 +14,7 @@ export class OrderService {
   private apibase: string
 
   constructor(private http: HttpClient) { 
-    this.apibase = 'https://codeconnectivity.com/apilinea/api/caja/'
+    this.apibase = 'https://codeconnectivity.com/apiapi/caja/'
     this.myAppUrl = environment.endpoint;
     this.myApiUrl = 'api/ordenes/';
     this.headers = new HttpHeaders({
