@@ -12,11 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getProductsBySearch = exports.getProductsByCategory = exports.getProducts = exports.updateProduct = exports.createProductsBulk = exports.createProduct = void 0;
+exports.getProductsBySearchMenu = exports.getProductsBySearch = exports.getProductsByCategory = exports.getProducts = exports.updateProduct = exports.createProductsBulk = exports.createProduct = void 0;
 const Producto_1 = __importDefault(require("../models/Producto"));
 const sequelize_1 = require("sequelize"); // Importar directamente desde 'sequelize'
 const sequelize_2 = __importDefault(require("sequelize"));
 const ProductOption_1 = __importDefault(require("../models/ProductOption"));
+const company_1 = __importDefault(require("../models/company"));
 const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, cost, price, stock, barcode, categoryId, productId } = req.body;
     const image = req.file ? req.file.filename : '';
@@ -199,3 +200,40 @@ const getProductsBySearch = (req, res) => __awaiter(void 0, void 0, void 0, func
     }
 });
 exports.getProductsBySearch = getProductsBySearch;
+// Obtener productos desde el ecommerce móvil usando subdominio
+const getProductsBySearchMenu = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const query = req.query.query;
+    const subdomain = req.query.subdomain;
+    if (!subdomain) {
+        return res.status(400).json({ message: 'Subdominio requerido' });
+    }
+    if (!query || typeof query !== 'string') {
+        return res.status(400).json({ message: 'El parámetro de búsqueda es requerido y debe ser una cadena.' });
+    }
+    try {
+        // Buscar la empresa por subdominio
+        const company = yield company_1.default.findOne({ where: { subdomain } });
+        if (!company) {
+            return res.status(404).json({ message: 'Empresa no encontrada' });
+        }
+        const products = yield Producto_1.default.findAll({
+            where: {
+                companyId: company.id,
+                [sequelize_1.Op.or]: [
+                    sequelize_2.default.where(sequelize_2.default.fn('LOWER', sequelize_2.default.col('name')), {
+                        [sequelize_1.Op.like]: `%${query.toLowerCase()}%`,
+                    }),
+                    { barcode: { [sequelize_1.Op.like]: `%${query}%` } },
+                ],
+            },
+            include: [{ model: ProductOption_1.default, as: 'options' }],
+            order: [['id', 'DESC']],
+        });
+        res.status(200).json(products);
+    }
+    catch (error) {
+        console.error('Error al buscar productos por subdominio:', error);
+        res.status(500).json({ message: 'Error al buscar productos', error });
+    }
+});
+exports.getProductsBySearchMenu = getProductsBySearchMenu;

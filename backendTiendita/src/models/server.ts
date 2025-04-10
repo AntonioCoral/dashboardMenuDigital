@@ -16,6 +16,7 @@ import Category from './Categoria';
 import categoryRoutes from '../routes/categoryRoutes';
 import productRoutes from '../routes/productRoutes';
 import carouselRoutes from '../routes/carouselRoutes';
+import path from 'path';
 
 
 dotenv.config();
@@ -75,6 +76,8 @@ class Server {
         this.app.use('/api/products',productRoutes)
         this.app.use('/api/carousel', carouselRoutes)
         this.app.use('/api/contact', contactInfoRoutes);//Ruta para informacion de contacto
+        // Servir archivos estáticos desde la carpeta 'uploads'
+        this.app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
     }
 
     middlewares() {

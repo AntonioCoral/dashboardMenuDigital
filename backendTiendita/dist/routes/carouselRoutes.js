@@ -17,4 +17,6 @@ router.post('/upload', authMiddleware_1.authenticate, upload_1.default.single('f
 router.put('/:id', authMiddleware_1.authenticate, carouselController_1.updateImage);
 // Eliminar una imagen por ID
 router.delete('/:id', authMiddleware_1.authenticate, carouselController_1.deleteImage);
+/////////////RUTA PARA APP MENU DIGITAL//////////////////
+router.get('/menu/:section', carouselController_1.getImagesBySectionMenu);
 exports.default = router;

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import ContactInfo from '../models/contactInfo.model';
+import { Company } from '../models';
 
 // Obtener la información de contacto
 export const getContactInfo = async (req: Request, res: Response) => {
@@ -61,5 +62,32 @@ export const updateContactInfo = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error al actualizar la información de contacto:', error);
     res.status(500).json({ message: 'Error al actualizar la información de contacto', error });
+  }
+};
+
+
+// Obtener la información de contacto desde MENU DIGITAL
+export const getContactInfoMenu = async (req: Request, res: Response) => {
+  try {
+    const subdomain = req.query.subdomain as string;
+
+    if (!subdomain) {
+      return res.status(400).json({ message: 'Subdominio requerido' });
+    }
+
+    const company = await Company.findOne({ where: { subdomain } });
+
+    if (!company) {
+      return res.status(404).json({ message: 'Empresa no encontrada' });
+    }
+
+    const contactInfo = await ContactInfo.findOne({
+      where: { companyId: company.id },
+      order: [['id', 'DESC']],
+    });
+
+    res.status(200).json(contactInfo || {});
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener la información de contacto', error });
   }
 };

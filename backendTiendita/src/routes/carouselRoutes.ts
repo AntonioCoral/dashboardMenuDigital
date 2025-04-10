@@ -1,7 +1,7 @@
 
 import express from 'express';import path from 'path';
 import { Request, Response, Router } from 'express';
-import { addImage, updateImage, deleteImage, uploadCarouselImage, getImagesBySection, addImageWithSection,} from '../controllers/carouselController';
+import { addImage, updateImage, deleteImage, uploadCarouselImage, getImagesBySection, addImageWithSection, getImagesBySectionMenu,} from '../controllers/carouselController';
 import upload from '../middlewares/upload';
 import { authenticate } from '../middlewares/authMiddleware';
 
@@ -18,5 +18,7 @@ router.put('/:id',authenticate, updateImage);
 
 // Eliminar una imagen por ID
 router.delete('/:id',authenticate, deleteImage);
+/////////////RUTA PARA APP MENU DIGITAL//////////////////
+router.get('/menu/:section', getImagesBySectionMenu);
 
 export default router;

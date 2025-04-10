@@ -28,6 +28,7 @@ const contactInfoRoutes_1 = __importDefault(require("../routes/contactInfoRoutes
 const categoryRoutes_1 = __importDefault(require("../routes/categoryRoutes"));
 const productRoutes_1 = __importDefault(require("../routes/productRoutes"));
 const carouselRoutes_1 = __importDefault(require("../routes/carouselRoutes"));
+const path_1 = __importDefault(require("path"));
 dotenv_1.default.config();
 class Server {
     constructor() {
@@ -69,6 +70,8 @@ class Server {
         this.app.use('/api/products', productRoutes_1.default);
         this.app.use('/api/carousel', carouselRoutes_1.default);
         this.app.use('/api/contact', contactInfoRoutes_1.default); //Ruta para informacion de contacto
+        // Servir archivos estáticos desde la carpeta 'uploads'
+        this.app.use('/uploads', express_1.default.static(path_1.default.join(__dirname, '../../uploads')));
     }
     middlewares() {
         this.app.use(express_1.default.json());

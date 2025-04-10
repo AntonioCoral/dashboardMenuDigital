@@ -1,3 +1,4 @@
+import { Company } from '../models';
 import CarouselImage from './../models/carouselImage.model';
 import { Request, Response } from 'express';
 
@@ -23,6 +24,42 @@ export const getImagesBySection = async (req: Request, res: Response) => {
     });
 
     // 🔹 Modificamos la URL de la imagen para que pueda ser accedida
+    const modifiedImages = images.map(image => ({
+      ...image.toJSON(),
+      imageUrl: `${req.protocol}://${req.get('host')}/api/carousel/uploads/${image.imageUrl}`
+    }));
+
+    res.status(200).json(modifiedImages);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener imágenes', error });
+  }
+};
+
+// Obtener imágenes por sección y compañía desde la APP MENU DIGITAL//////
+export const getImagesBySectionMenu = async (req: Request, res: Response) => {
+  try {
+    const { section } = req.params;
+    const subdomain = req.query.subdomain as string;
+
+    if (!subdomain) {
+      return res.status(400).json({ message: 'Subdominio requerido' });
+    }
+
+    // Buscar empresa por subdominio
+    const company = await Company.findOne({ where: { subdomain } });
+
+    if (!company) {
+      return res.status(404).json({ message: 'Empresa no encontrada' });
+    }
+
+    if (!['carousel', 'home'].includes(section)) {
+      return res.status(400).json({ message: 'Sección inválida' });
+    }
+
+    const images = await CarouselImage.findAll({
+      where: { section, companyId: company.id },
+    });
+
     const modifiedImages = images.map(image => ({
       ...image.toJSON(),
       imageUrl: `${req.protocol}://${req.get('host')}/api/carousel/uploads/${image.imageUrl}`

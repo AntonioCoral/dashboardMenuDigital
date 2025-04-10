@@ -12,7 +12,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uploadCarouselImage = exports.addImageWithSection = exports.deleteImage = exports.updateImage = exports.addImage = exports.getImagesBySection = void 0;
+exports.uploadCarouselImage = exports.addImageWithSection = exports.deleteImage = exports.updateImage = exports.addImage = exports.getImagesBySectionMenu = exports.getImagesBySection = void 0;
+const models_1 = require("../models");
 const carouselImage_model_1 = __importDefault(require("./../models/carouselImage.model"));
 // Obtener imágenes por sección y compañía
 const getImagesBySection = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -37,6 +38,33 @@ const getImagesBySection = (req, res) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.getImagesBySection = getImagesBySection;
+// Obtener imágenes por sección y compañía desde la APP MENU DIGITAL//////
+const getImagesBySectionMenu = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { section } = req.params;
+        const subdomain = req.query.subdomain;
+        if (!subdomain) {
+            return res.status(400).json({ message: 'Subdominio requerido' });
+        }
+        // Buscar empresa por subdominio
+        const company = yield models_1.Company.findOne({ where: { subdomain } });
+        if (!company) {
+            return res.status(404).json({ message: 'Empresa no encontrada' });
+        }
+        if (!['carousel', 'home'].includes(section)) {
+            return res.status(400).json({ message: 'Sección inválida' });
+        }
+        const images = yield carouselImage_model_1.default.findAll({
+            where: { section, companyId: company.id },
+        });
+        const modifiedImages = images.map(image => (Object.assign(Object.assign({}, image.toJSON()), { imageUrl: `${req.protocol}://${req.get('host')}/api/carousel/uploads/${image.imageUrl}` })));
+        res.status(200).json(modifiedImages);
+    }
+    catch (error) {
+        res.status(500).json({ message: 'Error al obtener imágenes', error });
+    }
+});
+exports.getImagesBySectionMenu = getImagesBySectionMenu;
 // Agregar una imagen con compañía
 const addImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {

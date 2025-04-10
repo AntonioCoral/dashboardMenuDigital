@@ -12,10 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteCategory = exports.getProductsByCategoryP = exports.getProductsByCategory = exports.getCategories = exports.createCategory = void 0;
+exports.getProductsByCategoryMenu = exports.getCategoriesMenu = exports.deleteCategory = exports.getProductsByCategoryP = exports.getProductsByCategory = exports.getCategories = exports.createCategory = void 0;
 const Categoria_1 = __importDefault(require("../models/Categoria"));
 const Producto_1 = __importDefault(require("../models/Producto"));
 const ProductOption_1 = __importDefault(require("../models/ProductOption"));
+const models_1 = require("../models");
 // Crear una nueva categoría
 const createCategory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -129,3 +130,73 @@ const deleteCategory = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.deleteCategory = deleteCategory;
+const getCategoriesMenu = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const subdomain = req.query.subdomain;
+        console.log('Subdominio recibido:', subdomain);
+        if (!subdomain) {
+            return res.status(400).json({ message: 'El subdominio es requerido' });
+        }
+        const company = yield models_1.Company.findOne({ where: { subdomain } });
+        if (!company) {
+            return res.status(404).json({ message: 'Empresa no encontrada' });
+        }
+        const categories = yield Categoria_1.default.findAll({
+            where: { companyId: company.id }
+        });
+        res.json(categories);
+    }
+    catch (error) {
+        console.error('Error fetching categories:', error);
+        res.status(500).json({ message: 'Error al obtener categorías', error });
+    }
+});
+exports.getCategoriesMenu = getCategoriesMenu;
+// 🔹 Obtener productos por categoría usando el subdominio y el nombre de la categoría
+const getProductsByCategoryMenu = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { categoryName } = req.params;
+        const subdomain = req.query.subdomain;
+        if (!subdomain) {
+            return res.status(400).json({ message: 'Subdominio requerido' });
+        }
+        const company = yield models_1.Company.findOne({ where: { subdomain } });
+        if (!company) {
+            return res.status(404).json({ message: 'Empresa no encontrada' });
+        }
+        // Buscar categoría por nombre y companyId
+        const category = yield Categoria_1.default.findOne({
+            where: {
+                name: categoryName,
+                companyId: company.id,
+            }
+        });
+        if (!category) {
+            return res.status(404).json({ message: 'Categoría no encontrada' });
+        }
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 6;
+        const offset = (page - 1) * limit;
+        const { count, rows: products } = yield Producto_1.default.findAndCountAll({
+            where: {
+                categoryId: category.id,
+                companyId: company.id
+            },
+            include: [{ model: ProductOption_1.default, as: 'options' }],
+            limit,
+            offset,
+            order: [['id', 'DESC']],
+        });
+        res.status(200).json({
+            products,
+            totalItems: count,
+            totalPages: Math.ceil(count / limit),
+            currentPage: page,
+        });
+    }
+    catch (error) {
+        console.error('Error al obtener productos por categoría:', error);
+        res.status(500).json({ message: 'Error al obtener productos por categoría', error });
+    }
+});
+exports.getProductsByCategoryMenu = getProductsByCategoryMenu;

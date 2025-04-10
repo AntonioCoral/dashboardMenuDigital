@@ -12,8 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateContactInfo = exports.getContactInfo = void 0;
+exports.getContactInfoMenu = exports.updateContactInfo = exports.getContactInfo = void 0;
 const contactInfo_model_1 = __importDefault(require("../models/contactInfo.model"));
+const models_1 = require("../models");
 // Obtener la información de contacto
 const getContactInfo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -70,3 +71,25 @@ const updateContactInfo = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.updateContactInfo = updateContactInfo;
+// Obtener la información de contacto desde MENU DIGITAL
+const getContactInfoMenu = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const subdomain = req.query.subdomain;
+        if (!subdomain) {
+            return res.status(400).json({ message: 'Subdominio requerido' });
+        }
+        const company = yield models_1.Company.findOne({ where: { subdomain } });
+        if (!company) {
+            return res.status(404).json({ message: 'Empresa no encontrada' });
+        }
+        const contactInfo = yield contactInfo_model_1.default.findOne({
+            where: { companyId: company.id },
+            order: [['id', 'DESC']],
+        });
+        res.status(200).json(contactInfo || {});
+    }
+    catch (error) {
+        res.status(500).json({ message: 'Error al obtener la información de contacto', error });
+    }
+});
+exports.getContactInfoMenu = getContactInfoMenu;

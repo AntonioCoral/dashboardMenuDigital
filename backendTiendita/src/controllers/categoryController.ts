@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Category from '../models/Categoria';
 import Product from '../models/Producto';
 import ProductOption from '../models/ProductOption';
+import { Company } from '../models';
 
 // Crear una nueva categoría
 export const createCategory = async (req: Request, res: Response) => {
@@ -127,3 +128,84 @@ export const deleteCategory = async (req: Request, res: Response) => {
     res.status(500).json({ msg: 'Categoria no encontrada'})
   }
 }
+
+export const getCategoriesMenu = async (req: Request, res: Response) => {
+  try {
+    const subdomain = req.query.subdomain as string;
+    console.log('Subdominio recibido:', subdomain);
+
+    if (!subdomain) {
+      return res.status(400).json({ message: 'El subdominio es requerido' });
+    }
+
+    const company = await Company.findOne({ where: { subdomain } });
+
+    if (!company) {
+      return res.status(404).json({ message: 'Empresa no encontrada' });
+    }
+
+    const categories = await Category.findAll({
+      where: { companyId: company.id }
+    });
+
+    res.json(categories);
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    res.status(500).json({ message: 'Error al obtener categorías', error });
+  }
+};
+
+
+// 🔹 Obtener productos por categoría usando el subdominio y el nombre de la categoría
+export const getProductsByCategoryMenu = async (req: Request, res: Response) => {
+  try {
+    const { categoryName } = req.params;
+    const subdomain = req.query.subdomain as string;
+
+    if (!subdomain) {
+      return res.status(400).json({ message: 'Subdominio requerido' });
+    }
+
+    const company = await Company.findOne({ where: { subdomain } });
+    if (!company) {
+      return res.status(404).json({ message: 'Empresa no encontrada' });
+    }
+
+    // Buscar categoría por nombre y companyId
+    const category = await Category.findOne({
+      where: {
+        name: categoryName,
+        companyId: company.id,
+      }
+    });
+
+    if (!category) {
+      return res.status(404).json({ message: 'Categoría no encontrada' });
+    }
+
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 6;
+    const offset = (page - 1) * limit;
+
+    const { count, rows: products } = await Product.findAndCountAll({
+      where: {
+        categoryId: category.id,
+        companyId: company.id
+      },
+      include: [{ model: ProductOption, as: 'options' }],
+      limit,
+      offset,
+      order: [['id', 'DESC']],
+    });
+
+    res.status(200).json({
+      products,
+      totalItems: count,
+      totalPages: Math.ceil(count / limit),
+      currentPage: page,
+    });
+  } catch (error) {
+    console.error('Error al obtener productos por categoría:', error);
+    res.status(500).json({ message: 'Error al obtener productos por categoría', error });
+  }
+};

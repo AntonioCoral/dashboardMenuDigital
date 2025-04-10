@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createProduct, createProductsBulk, getProducts, getProductsByCategory, getProductsBySearch, updateProduct } from '../controllers/productController';
+import { createProduct, createProductsBulk, getProducts, getProductsByCategory, getProductsBySearch, getProductsBySearchMenu, updateProduct } from '../controllers/productController';
 import upload from '../middlewares/upload';
 import { authenticate } from '../middlewares/authMiddleware';
 
@@ -12,4 +12,8 @@ router.get('/category/:categoryId',authenticate, getProductsByCategory); // Obte
 router.put('/:id', upload.single('image'),authenticate, updateProduct); // Actualizar un producto específico
 router.get('/search',authenticate, getProductsBySearch);
 
+///////Menu digital///////////
+router.get('/Menu', getProducts); // Obtener todos los productos
+router.get('/categoryMenu/:categoryId', getProductsByCategory); // Obtener productos por categoría
+router.get('/searchMenu', getProductsBySearchMenu);
 export default router;

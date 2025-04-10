@@ -5,6 +5,7 @@ import Category from '../models/Categoria';
 import { Op, fn, col } from 'sequelize'; // Importar directamente desde 'sequelize'
 import sequelize from 'sequelize';
 import ProductOption from '../models/ProductOption';
+import Company from '../models/company';
 
 export const createProduct = async (req: Request, res: Response) => {
   const { name, cost, price, stock, barcode, categoryId, productId } = req.body;
@@ -214,4 +215,45 @@ export const getProductsBySearch = async (req: Request, res: Response) => {
   }
 };
 
+// Obtener productos desde el ecommerce móvil usando subdominio
+export const getProductsBySearchMenu = async (req: Request, res: Response) => {
+  const query = req.query.query as string;
+  const subdomain = req.query.subdomain as string;
+
+  if (!subdomain) {
+    return res.status(400).json({ message: 'Subdominio requerido' });
+  }
+
+  if (!query || typeof query !== 'string') {
+    return res.status(400).json({ message: 'El parámetro de búsqueda es requerido y debe ser una cadena.' });
+  }
+
+  try {
+    // Buscar la empresa por subdominio
+    const company = await Company.findOne({ where: { subdomain } });
+
+    if (!company) {
+      return res.status(404).json({ message: 'Empresa no encontrada' });
+    }
+
+    const products = await Product.findAll({
+      where: {
+        companyId: company.id,
+        [Op.or]: [
+          sequelize.where(sequelize.fn('LOWER', sequelize.col('name')), {
+            [Op.like]: `%${query.toLowerCase()}%`,
+          }),
+          { barcode: { [Op.like]: `%${query}%` } },
+        ],
+      },
+      include: [{ model: ProductOption, as: 'options' }],
+      order: [['id', 'DESC']],
+    });
+
+    res.status(200).json(products);
+  } catch (error) {
+    console.error('Error al buscar productos por subdominio:', error);
+    res.status(500).json({ message: 'Error al buscar productos', error });
+  }
+};
 
