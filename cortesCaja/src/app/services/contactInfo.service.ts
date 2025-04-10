@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ContactInfoService {
-  private apiUrl = 'http://localhost:500/api/contact';
+  private apiUrl = 'https://codeconnectivity.com/apilinea/api/contact';
 
   constructor(private http: HttpClient) {}
 
