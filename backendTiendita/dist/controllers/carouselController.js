@@ -30,7 +30,7 @@ const getImagesBySection = (req, res) => __awaiter(void 0, void 0, void 0, funct
             where: { section, companyId },
         });
         // 🔹 Modificamos la URL de la imagen para que pueda ser accedida
-        const modifiedImages = images.map(image => (Object.assign(Object.assign({}, image.toJSON()), { imageUrl: `${req.protocol}://${req.get('host')}/api/carousel/uploads/${image.imageUrl}` })));
+        const modifiedImages = images.map(image => (Object.assign(Object.assign({}, image.toJSON()), { imageUrl: `${req.protocol}://${req.get('host')}/api/api/carousel/uploads/${image.imageUrl}` })));
         res.status(200).json(modifiedImages);
     }
     catch (error) {
@@ -57,7 +57,7 @@ const getImagesBySectionMenu = (req, res) => __awaiter(void 0, void 0, void 0, f
         const images = yield carouselImage_model_1.default.findAll({
             where: { section, companyId: company.id },
         });
-        const modifiedImages = images.map(image => (Object.assign(Object.assign({}, image.toJSON()), { imageUrl: `${req.protocol}://${req.get('host')}/api/carousel/uploads/${image.imageUrl}` })));
+        const modifiedImages = images.map(image => (Object.assign(Object.assign({}, image.toJSON()), { imageUrl: `${req.protocol}://${req.get('host')}/api/api/carousel/uploads/${image.imageUrl}` })));
         res.status(200).json(modifiedImages);
     }
     catch (error) {

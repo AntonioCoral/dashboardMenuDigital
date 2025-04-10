@@ -71,7 +71,7 @@ class Server {
         this.app.use('/api/carousel', carouselRoutes_1.default);
         this.app.use('/api/contact', contactInfoRoutes_1.default); //Ruta para informacion de contacto
         // Servir archivos estáticos desde la carpeta 'uploads'
-        this.app.use('/uploads', express_1.default.static(path_1.default.join(__dirname, '../../uploads')));
+        this.app.use('/api/uploads', express_1.default.static(path_1.default.join(__dirname, '../../uploads')));
     }
     middlewares() {
         this.app.use(express_1.default.json());

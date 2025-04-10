@@ -26,7 +26,7 @@ export const getImagesBySection = async (req: Request, res: Response) => {
     // 🔹 Modificamos la URL de la imagen para que pueda ser accedida
     const modifiedImages = images.map(image => ({
       ...image.toJSON(),
-      imageUrl: `${req.protocol}://${req.get('host')}/api/carousel/uploads/${image.imageUrl}`
+      imageUrl: `${req.protocol}://${req.get('host')}/api/api/carousel/uploads/${image.imageUrl}`
     }));
 
     res.status(200).json(modifiedImages);
@@ -62,7 +62,7 @@ export const getImagesBySectionMenu = async (req: Request, res: Response) => {
 
     const modifiedImages = images.map(image => ({
       ...image.toJSON(),
-      imageUrl: `${req.protocol}://${req.get('host')}/api/carousel/uploads/${image.imageUrl}`
+      imageUrl: `${req.protocol}://${req.get('host')}/api/api/carousel/uploads/${image.imageUrl}`
     }));
 
     res.status(200).json(modifiedImages);
