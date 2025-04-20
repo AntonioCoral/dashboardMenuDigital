@@ -10,7 +10,7 @@ export class EcommerceService {
 
   //private apiUrl = 'https://codeconnectivity.com/apilinea/api/'; // Reemplaza esto con la URL real de tu API
   private apiUrl = 'https://codeconnectivity.com/api/api'; // Reemplaza esto con la URL real de tu API
-
+  private apiUrlprueba = 'http://localhost:500/api';
   constructor(private http: HttpClient) { }
 
   getCategories(): Observable<ICategory[]> {
@@ -56,6 +56,10 @@ export class EcommerceService {
   }
   getProductOptions(): Observable<IProductOption[]> {
     return this.http.get<IProductOption[]>(`${this.apiUrl}/productOptions`);
+  }
+
+  deleteProduct(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/products/menu/${id}`);
   }
   
 }

@@ -12,7 +12,6 @@ interface ProductAttributes {
   name: string;
   cost: number;
   price: number;
-  stock: number;
   image?: string;
   barcode?: string;
 }
@@ -29,7 +28,6 @@ class Product extends Model<ProductAttributes, ProductCreationAttributes> implem
   public name!: string;
   public cost!: number;
   public price!: number;
-  public stock!: number;
   public image?: string;
   public barcode?: string;
 }
@@ -80,10 +78,6 @@ Product.init(
       allowNull: false,
     },
     price: {
-      type: DataTypes.DOUBLE,
-      allowNull: false,
-    },
-    stock: {
       type: DataTypes.DOUBLE,
       allowNull: false,
     },

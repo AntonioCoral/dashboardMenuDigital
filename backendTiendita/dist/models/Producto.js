@@ -58,10 +58,6 @@ Product.init({
         type: sequelize_1.DataTypes.DOUBLE,
         allowNull: false,
     },
-    stock: {
-        type: sequelize_1.DataTypes.DOUBLE,
-        allowNull: false,
-    },
     image: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: true,

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createProduct, createProductsBulk, getProducts, getProductsByCategory, getProductsBySearch, getProductsBySearchMenu, updateProduct } from '../controllers/productController';
+import { createProduct, createProductsBulk, deleteProduct, getProducts, getProductsByCategory, getProductsBySearch, getProductsBySearchMenu, updateProduct } from '../controllers/productController';
 import upload from '../middlewares/upload';
 import { authenticate } from '../middlewares/authMiddleware';
 
@@ -11,6 +11,7 @@ router.post('/bulk', createProductsBulk); // Crear múltiples productos
 router.get('/category/:categoryId',authenticate, getProductsByCategory); // Obtener productos por categoría
 router.put('/:id', upload.single('image'),authenticate, updateProduct); // Actualizar un producto específico
 router.get('/search',authenticate, getProductsBySearch);
+router.delete('/menu/:id', authenticate, deleteProduct);// Ruta para eliminar producto por ID solo si pertenece a la empresa autenticada
 
 ///////Menu digital///////////
 router.get('/Menu', getProducts); // Obtener todos los productos

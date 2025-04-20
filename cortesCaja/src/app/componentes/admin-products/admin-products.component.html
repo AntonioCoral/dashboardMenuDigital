@@ -104,25 +104,7 @@
               </div>
             </div>
 
-            <!-- Stock -->
-            <div class="form-floating mb-3">
-              <input
-                type="number"
-                id="stock"
-                formControlName="stock"
-                class="form-control"
-                placeholder="Stock"
-              />
-              <label for="stock" class="text-gray-500">Stock</label>
-              <div
-                *ngIf="form.get('stock')?.invalid && form.get('stock')?.touched"
-                class="text-danger text-sm"
-              >
-                Stock es requerido.
-              </div>
-            </div>
-
-            <!-- Código -->
+            <!-- Clave o descripcion para busqueda del producto -->
             <div class="form-floating mb-3">
               <input
                 type="text"
@@ -131,7 +113,7 @@
                 class="form-control"
                 placeholder="Código"
               />
-              <label for="barcode" class="text-gray-500">Código</label>
+              <label for="barcode" class="text-gray-500">Clave o descripción</label>
               <div
                 *ngIf="
                   form.get('barcode')?.invalid && form.get('barcode')?.touched
@@ -239,3 +221,36 @@
     </div>
   </div>
   
+
+  <!-- Modal de resultados de búsqueda -->
+<div *ngIf="showSearchModal" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+  <div class="bg-white p-6 rounded-lg w-full max-w-xl relative shadow-lg">
+    <button class="absolute top-2 right-2 text-gray-500" (click)="showSearchModal = false">&times;</button>
+    <h3 class="text-lg font-semibold mb-4">Resultados de búsqueda</h3>
+    
+    <ul *ngIf="searchResults.length; else noResults">
+      <li *ngFor="let product of searchResults" class="flex justify-between items-center border-b py-2">
+        <div>
+          <p class="font-medium text-gray-800">{{ product.name }}</p>
+          <p class="text-sm text-gray-500">Categoría: {{ product.Category?.name }}</p>
+          <p class="text-sm text-green-600">{{ product.price | currency }}</p>
+        </div>
+        <div class="flex gap-2">
+          <button class="text-blue-500 hover:underline" (click)="selectProduct(product)">Editar</button>
+          <button class="text-red-500 hover:underline" (click)="confirmDelete(product.id!)">Eliminar</button>
+        </div>
+      </li>
+    </ul>
+
+    <ng-template #noResults>
+      <p class="text-gray-600">No se encontraron productos con ese nombre.</p>
+    </ng-template>
+
+    <!-- Confirmación de eliminación -->
+    <div *ngIf="deletingProductId" class="mt-4 text-right">
+      <p class="text-red-600 text-sm mb-2">¿Estás seguro que deseas eliminar este producto?</p>
+      <button class="btn btn-sm btn-danger mr-2" (click)="deleteProduct()">Sí, eliminar</button>
+      <button class="btn btn-sm btn-secondary" (click)="cancelDelete()">Cancelar</button>
+    </div>
+  </div>
+</div>

@@ -10,6 +10,7 @@ export interface IProduct {
     options: IProductOption[];
     categoryId: number;
     productId?: number;
+    Category?: { name: string };
   }
   
   export interface IProductOption {

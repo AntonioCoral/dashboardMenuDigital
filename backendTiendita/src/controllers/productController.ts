@@ -6,9 +6,11 @@ import { Op, fn, col } from 'sequelize'; // Importar directamente desde 'sequeli
 import sequelize from 'sequelize';
 import ProductOption from '../models/ProductOption';
 import Company from '../models/company';
+import fs from 'fs';
+import path from 'path';
 
 export const createProduct = async (req: Request, res: Response) => {
-  const { name, cost, price, stock, barcode, categoryId, productId } = req.body;
+  const { name, cost, price, barcode, categoryId, productId } = req.body;
   const image = req.file ? req.file.filename : '';
   const companyId = req.companyId; // 🔹 Obtener companyId del middleware
 
@@ -21,7 +23,6 @@ export const createProduct = async (req: Request, res: Response) => {
       name,
       cost,
       price,
-      stock,
       barcode,
       image,
       categoryId,
@@ -53,7 +54,7 @@ export const createProductsBulk = async (req: Request, res: Response) => {
 
 export const updateProduct = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { name, cost, price, stock, barcode, categoryId } = req.body;
+  const { name, cost, price, barcode, categoryId } = req.body;
   const companyId = req.companyId; // 🔹 Obtener companyId
 
   if (!companyId) {
@@ -84,7 +85,6 @@ export const updateProduct = async (req: Request, res: Response) => {
       name,
       cost,
       price,
-      stock,
       barcode,
       image,
       categoryId,
@@ -257,3 +257,36 @@ export const getProductsBySearchMenu = async (req: Request, res: Response) => {
   }
 };
 
+// Eliminar un producto incluyendo la imagen asegurando que sea de la empresa autenticada
+
+export const deleteProduct = async (req: Request, res: Response) => {
+  const productId = req.params.id;
+  const companyId = req.companyId;
+
+  try {
+    const product = await Product.findOne({
+      where: { id: productId, companyId }
+    });
+
+    if (!product) {
+      return res.status(404).json({ message: 'Producto no encontrado' });
+    }
+
+    // Eliminar la imagen del sistema de archivos
+    if (product.image) {
+      const imagePath = path.join(__dirname, '../../uploads', product.image);
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
+        console.log('Imagen eliminada:', imagePath);
+      } else {
+        console.log('La imagen no existe en el servidor:', imagePath);
+      }
+    }
+
+    await product.destroy();
+    res.status(200).json({ message: 'Producto eliminado correctamente' });
+  } catch (error) {
+    console.error('Error al eliminar producto:', error);
+    res.status(500).json({ message: 'Error al eliminar el producto', error });
+  }
+};

@@ -4,6 +4,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { EcommerceService } from 'src/app/services/ecommerce.service';
 import { Location } from '@angular/common';
+import { IProduct } from 'src/app/interfaces/interface';
 
 @Component({
   selector: 'app-admin-products',
@@ -12,12 +13,15 @@ import { Location } from '@angular/common';
 })
 export class AdminProductsComponent implements OnInit {
   form: FormGroup;
-  categories: any[] = []; // Puedes definir una interfaz para las categorías
+  categories: any[] = [];
   loading: boolean = false;
   selectedFile: File | null = null;
-  importedProducts: any[] = []; // Almacenar los productos importados aquí
-  searchQuery: string = ''; // Cadena de búsqueda
+  importedProducts: any[] = [];
+  searchQuery: string = '';
   isEditing: boolean = false;
+  searchResults: IProduct[] = [];
+  showSearchModal: boolean = false;
+  deletingProductId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -26,17 +30,15 @@ export class AdminProductsComponent implements OnInit {
     private router: Router,
     private location: Location
   ) {
-    // Inicialización del formulario con opciones de precio como FormArray
     this.form = this.fb.group({
       id: [''],
       name: ['', Validators.required],
       cost: ['', Validators.required],
       price: ['', Validators.required],
-      stock: ['', Validators.required],
       barcode: ['', Validators.required],
       image: [''],
       categoryId: [''],
-      options: this.fb.array([]) // Para las opciones de precio
+      options: this.fb.array([])
     });
   }
 
@@ -51,19 +53,16 @@ export class AdminProductsComponent implements OnInit {
     });
   }
 
-  // Cargar opciones de precios
   loadProductOptions() {
     this.ecommerceService.getProductOptions().subscribe((options: any[]) => {
       options.forEach(option => this.addOptionToForm(option));
     });
   }
 
-  // Obtener el FormArray de opciones de precios
   get options(): FormArray {
     return this.form.get('options') as FormArray;
   }
 
-  // Agregar una nueva opción de precio al formulario
   addOptionToForm(option?: any) {
     const optionGroup = this.fb.group({
       description: [option?.description || '', Validators.required],
@@ -72,14 +71,12 @@ export class AdminProductsComponent implements OnInit {
     this.options.push(optionGroup);
   }
 
-  // Añadir una nueva opción de precio
   addNewPriceOption() {
-    this.addOptionToForm(); // Llamar para añadir una nueva opción vacía
+    this.addOptionToForm();
   }
 
-  // Eliminar una opción de precio
   removeOption(index: number) {
-    this.options.removeAt(index); // Eliminar una opción del FormArray
+    this.options.removeAt(index);
   }
 
   onFileSelected(event: Event) {
@@ -94,19 +91,16 @@ export class AdminProductsComponent implements OnInit {
       this.toastr.error('Formulario inválido o no hay productos importados');
       return;
     }
-  
+
     this.loading = true;
-  
+
     const formData = new FormData();
     formData.append('name', this.form.get('name')?.value);
     formData.append('cost', this.form.get('cost')?.value);
     formData.append('price', this.form.get('price')?.value);
-    formData.append('stock', this.form.get('stock')?.value);
     formData.append('barcode', this.form.get('barcode')?.value);
     formData.append('categoryId', this.form.get('categoryId')?.value);
-
-    // Asociar opciones de precio
-    formData.append('options', JSON.stringify(this.options.value)); // Pasar las opciones de precio
+    formData.append('options', JSON.stringify(this.options.value));
 
     if (this.selectedFile) {
       formData.append('image', this.selectedFile);
@@ -143,36 +137,65 @@ export class AdminProductsComponent implements OnInit {
   }
 
   searchProduct() {
-    if (this.searchQuery.trim()) {
-      this.ecommerceService.searchProducts(this.searchQuery).subscribe(products => {
-        if (products.length > 0) {
-          const product = products[0];
-          this.isEditing = true;
-          
-          this.form.patchValue({
-            id: product.id,
-            name: product.name,
-            cost: product.cost,
-            price: product.price,
-            stock: product.stock,
-            barcode: product.barcode,
-            categoryId: product.categoryId
-          });
+    if (!this.searchQuery.trim()) return;
 
-          // Asignar las opciones de precios
-          this.options.clear(); // Limpiar opciones previas antes de asignar nuevas
-          product.options.forEach(option => this.addOptionToForm(option));
+    this.ecommerceService.searchProducts(this.searchQuery).subscribe(products => {
+      if (products.length > 0) {
+        this.searchResults = products;
+        this.showSearchModal = true;
+      } else {
+        this.toastr.error('Producto no encontrado');
+      }
+    }, error => {
+      this.toastr.error('Error en la búsqueda de productos');
+    });
+  }
 
-        } else {
-          this.toastr.error('Producto no encontrado');
-        }
-      }, error => {
-        this.toastr.error('Error en la búsqueda de productos');
-      });
+  selectProduct(product: IProduct): void {
+    this.showSearchModal = false;
+    this.isEditing = true;
+
+    this.form.patchValue({
+      id: product.id,
+      name: product.name,
+      cost: product.cost,
+      price: product.price,
+      stock: product.stock,
+      barcode: product.barcode,
+      categoryId: product.categoryId
+    });
+
+    this.options.clear();
+    if (product.options?.length) {
+      product.options.forEach(opt => this.addOptionToForm(opt));
     }
   }
 
+  confirmDelete(productId: number): void {
+    this.deletingProductId = productId;
+  }
+
+  cancelDelete(): void {
+    this.deletingProductId = null;
+  }
+
+  deleteProduct(): void {
+    if (!this.deletingProductId) return;
+
+    this.ecommerceService.deleteProduct(this.deletingProductId).subscribe({
+      next: () => {
+        this.toastr.success('Producto eliminado correctamente');
+        this.searchResults = this.searchResults.filter(p => p.id !== this.deletingProductId);
+        this.deletingProductId = null;
+      },
+      error: (err) => {
+        this.toastr.error('Error al eliminar el producto');
+        console.error(err);
+      }
+    });
+  }
+
   goBack(): void {
-    this.location.back(); // Navega hacia atrás en el historial del navegador
+    this.location.back();
   }
 }

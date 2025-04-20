@@ -12,14 +12,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getProductsBySearchMenu = exports.getProductsBySearch = exports.getProductsByCategory = exports.getProducts = exports.updateProduct = exports.createProductsBulk = exports.createProduct = void 0;
+exports.deleteProduct = exports.getProductsBySearchMenu = exports.getProductsBySearch = exports.getProductsByCategory = exports.getProducts = exports.updateProduct = exports.createProductsBulk = exports.createProduct = void 0;
 const Producto_1 = __importDefault(require("../models/Producto"));
 const sequelize_1 = require("sequelize"); // Importar directamente desde 'sequelize'
 const sequelize_2 = __importDefault(require("sequelize"));
 const ProductOption_1 = __importDefault(require("../models/ProductOption"));
 const company_1 = __importDefault(require("../models/company"));
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, cost, price, stock, barcode, categoryId, productId } = req.body;
+    const { name, cost, price, barcode, categoryId, productId } = req.body;
     const image = req.file ? req.file.filename : '';
     const companyId = req.companyId; // 🔹 Obtener companyId del middleware
     if (!companyId) {
@@ -30,7 +32,6 @@ const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             name,
             cost,
             price,
-            stock,
             barcode,
             image,
             categoryId,
@@ -59,7 +60,7 @@ const createProductsBulk = (req, res) => __awaiter(void 0, void 0, void 0, funct
 exports.createProductsBulk = createProductsBulk;
 const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const { name, cost, price, stock, barcode, categoryId } = req.body;
+    const { name, cost, price, barcode, categoryId } = req.body;
     const companyId = req.companyId; // 🔹 Obtener companyId
     if (!companyId) {
         return res.status(403).json({ message: 'Acceso no autorizado: Compañía no encontrada' });
@@ -85,7 +86,6 @@ const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             name,
             cost,
             price,
-            stock,
             barcode,
             image,
             categoryId,
@@ -237,3 +237,34 @@ const getProductsBySearchMenu = (req, res) => __awaiter(void 0, void 0, void 0, 
     }
 });
 exports.getProductsBySearchMenu = getProductsBySearchMenu;
+// Eliminar un producto incluyendo la imagen asegurando que sea de la empresa autenticada
+const deleteProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const productId = req.params.id;
+    const companyId = req.companyId;
+    try {
+        const product = yield Producto_1.default.findOne({
+            where: { id: productId, companyId }
+        });
+        if (!product) {
+            return res.status(404).json({ message: 'Producto no encontrado' });
+        }
+        // Eliminar la imagen del sistema de archivos
+        if (product.image) {
+            const imagePath = path_1.default.join(__dirname, '../../uploads', product.image);
+            if (fs_1.default.existsSync(imagePath)) {
+                fs_1.default.unlinkSync(imagePath);
+                console.log('Imagen eliminada:', imagePath);
+            }
+            else {
+                console.log('La imagen no existe en el servidor:', imagePath);
+            }
+        }
+        yield product.destroy();
+        res.status(200).json({ message: 'Producto eliminado correctamente' });
+    }
+    catch (error) {
+        console.error('Error al eliminar producto:', error);
+        res.status(500).json({ message: 'Error al eliminar el producto', error });
+    }
+});
+exports.deleteProduct = deleteProduct;

@@ -14,6 +14,7 @@ router.post('/bulk', productController_1.createProductsBulk); // Crear múltiple
 router.get('/category/:categoryId', authMiddleware_1.authenticate, productController_1.getProductsByCategory); // Obtener productos por categoría
 router.put('/:id', upload_1.default.single('image'), authMiddleware_1.authenticate, productController_1.updateProduct); // Actualizar un producto específico
 router.get('/search', authMiddleware_1.authenticate, productController_1.getProductsBySearch);
+router.delete('/menu/:id', authMiddleware_1.authenticate, productController_1.deleteProduct); // Ruta para eliminar producto por ID solo si pertenece a la empresa autenticada
 ///////Menu digital///////////
 router.get('/Menu', productController_1.getProducts); // Obtener todos los productos
 router.get('/categoryMenu/:categoryId', productController_1.getProductsByCategory); // Obtener productos por categoría
