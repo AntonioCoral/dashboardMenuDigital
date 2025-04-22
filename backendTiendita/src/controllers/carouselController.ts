@@ -1,5 +1,7 @@
 import { Company } from '../models';
 import CarouselImage from './../models/carouselImage.model';
+import fs from 'fs';
+import path from 'path';
 import { Request, Response } from 'express';
 
 
@@ -144,9 +146,23 @@ export const deleteImage = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Imagen no encontrada o no pertenece a la empresa' });
     }
 
+    // Ruta del archivo físico
+    const imagePath = path.join(__dirname, '../../uploads', image.imageUrl);
+
+    // Verifica si el archivo existe y lo elimina
+    if (fs.existsSync(imagePath)) {
+      fs.unlinkSync(imagePath);
+      console.log(`Imagen eliminada del servidor: ${imagePath}`);
+    } else {
+      console.warn(`La imagen no existe en el servidor: ${imagePath}`);
+    }
+
+    // Elimina el registro en la base de datos
     await image.destroy();
+
     res.status(200).json({ message: 'Imagen eliminada correctamente' });
   } catch (error) {
+    console.error('Error al eliminar la imagen:', error);
     res.status(500).json({ message: 'Error al eliminar la imagen', error });
   }
 };

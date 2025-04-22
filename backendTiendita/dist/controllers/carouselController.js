@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.uploadCarouselImage = exports.addImageWithSection = exports.deleteImage = exports.updateImage = exports.addImage = exports.getImagesBySectionMenu = exports.getImagesBySection = void 0;
 const models_1 = require("../models");
 const carouselImage_model_1 = __importDefault(require("./../models/carouselImage.model"));
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 // Obtener imágenes por sección y compañía
 const getImagesBySection = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -122,10 +124,22 @@ const deleteImage = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         if (!image) {
             return res.status(404).json({ message: 'Imagen no encontrada o no pertenece a la empresa' });
         }
+        // Ruta del archivo físico
+        const imagePath = path_1.default.join(__dirname, '../../uploads', image.imageUrl);
+        // Verifica si el archivo existe y lo elimina
+        if (fs_1.default.existsSync(imagePath)) {
+            fs_1.default.unlinkSync(imagePath);
+            console.log(`Imagen eliminada del servidor: ${imagePath}`);
+        }
+        else {
+            console.warn(`La imagen no existe en el servidor: ${imagePath}`);
+        }
+        // Elimina el registro en la base de datos
         yield image.destroy();
         res.status(200).json({ message: 'Imagen eliminada correctamente' });
     }
     catch (error) {
+        console.error('Error al eliminar la imagen:', error);
         res.status(500).json({ message: 'Error al eliminar la imagen', error });
     }
 });
