@@ -5,13 +5,14 @@ import { Router } from '@angular/router';
 import { EcommerceService } from 'src/app/services/ecommerce.service';
 import { Location } from '@angular/common';
 import { IProduct } from 'src/app/interfaces/interface';
-
+import { ViewChild, ElementRef } from '@angular/core';
 @Component({
   selector: 'app-admin-products',
   templateUrl: './admin-products.component.html',
   styleUrls: ['./admin-products.component.css']
 })
 export class AdminProductsComponent implements OnInit {
+  @ViewChild('fileInput') fileInput!: ElementRef;
   form: FormGroup;
   categories: any[] = [];
   loading: boolean = false;
@@ -127,6 +128,16 @@ export class AdminProductsComponent implements OnInit {
           this.loading = false;
           this.toastr.success('Producto agregado con éxito');
           this.router.navigate(['/admin-products']);
+           // ✅ Limpiar formulario
+          this.form.reset();
+          this.options.clear(); // limpia las opciones
+          this.selectedFile = null;
+          this.isEditing = false;
+          this.searchQuery = '';
+          // ✅ Limpiar manualmente el campo de imagen en el DOM
+        if (this.fileInput) {
+          this.fileInput.nativeElement.value = '';
+        }
         },
         (error) => {
           this.loading = false;
@@ -143,6 +154,7 @@ export class AdminProductsComponent implements OnInit {
       if (products.length > 0) {
         this.searchResults = products;
         this.showSearchModal = true;
+        this.searchQuery = '';
       } else {
         this.toastr.error('Producto no encontrado');
       }
