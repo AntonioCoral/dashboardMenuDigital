@@ -1,0 +1,21 @@
+.phone-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.phone-prefix {
+  background-color: #f3f3f3;
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  border-radius: 4px 0 0 4px;
+}
+
+.phone-number {
+  flex: 1;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-left: none;
+  border-radius: 0 4px 4px 0;
+}

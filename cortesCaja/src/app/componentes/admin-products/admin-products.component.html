@@ -223,35 +223,49 @@
   </div>
   
 
-  <!-- Modal de resultados de búsqueda -->
+<!-- Modal de resultados de búsqueda -->
 <div *ngIf="showSearchModal" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-  <div class="bg-white p-6 rounded-lg w-full max-w-xl relative shadow-lg">
-    <button class="absolute top-2 right-2 text-gray-500" (click)="showSearchModal = false">&times;</button>
-    <h3 class="text-lg font-semibold mb-4">Resultados de búsqueda</h3>
+  <div class="bg-white rounded-lg w-full max-w-xl relative shadow-lg max-h-[90vh] flex flex-col">
     
-    <ul *ngIf="searchResults.length; else noResults">
-      <li *ngFor="let product of searchResults" class="flex justify-between items-center border-b py-2">
-        <div>
-          <p class="font-medium text-gray-800">{{ product.name }}</p>
-          <p class="text-sm text-gray-500">Categoría: {{ product.Category?.name }}</p>
-          <p class="text-sm text-green-600">{{ product.price | currency }}</p>
-        </div>
-        <div class="flex gap-2">
-          <button class="text-blue-500 hover:underline" (click)="selectProduct(product)">Editar</button>
-          <button class="text-red-500 hover:underline" (click)="confirmDelete(product.id!)">Eliminar</button>
-        </div>
-      </li>
-    </ul>
+    <!-- Encabezado fijo con botón de cerrar -->
+    <div class="sticky top-0 bg-white z-10 p-4 border-b flex justify-between items-center shadow">
+      <h3 class="text-lg font-semibold text-gray-800">Resultados de búsqueda</h3>
+      <button 
+        class="text-red-600 text-2xl hover:text-red-800 focus:outline-none font-bold"
+        (click)="showSearchModal = false"
+        aria-label="Cerrar"
+        title="Cerrar"
+      >
+        ×
+      </button>
+    </div>
 
+    <!-- Contenido desplazable -->
+      <div class="overflow-y-auto p-4 flex-1">
+        <ul *ngIf="searchResults.length; else noResults">
+        <li *ngFor="let product of searchResults" class="border-b py-2">
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="font-medium text-gray-800">{{ product.name }}</p>
+              <p class="text-sm text-gray-500">Categoría: {{ product.Category?.name }}</p>
+              <p class="text-sm text-green-600">{{ product.price | currency }}</p>
+            </div>
+            <div class="flex gap-2">
+              <button class="text-blue-500 hover:underline" (click)="selectProduct(product)">Editar</button>
+              <button class="text-red-500 hover:underline" (click)="confirmDelete(product.id!)">Eliminar</button>
+            </div>
+          </div>
+      <!-- Confirmación individual debajo del producto -->
+          <div *ngIf="deletingProductId === product.id" class="mt-2 text-right bg-red-50 p-3 rounded shadow text-sm">
+            <p class="text-red-600 mb-2">¿Estás seguro que deseas eliminar este producto?</p>
+            <button class="btn btn-sm btn-danger mr-2" (click)="deleteProduct()">Sí, eliminar</button>
+            <button class="btn btn-sm btn-secondary" (click)="cancelDelete()">Cancelar</button>
+          </div>
+        </li>
+      </ul>
+    </div>
     <ng-template #noResults>
-      <p class="text-gray-600">No se encontraron productos con ese nombre.</p>
+          <p class="text-gray-600">No se encontraron productos con ese nombre.</p>
     </ng-template>
 
-    <!-- Confirmación de eliminación -->
-    <div *ngIf="deletingProductId" class="mt-4 text-right">
-      <p class="text-red-600 text-sm mb-2">¿Estás seguro que deseas eliminar este producto?</p>
-      <button class="btn btn-sm btn-danger mr-2" (click)="deleteProduct()">Sí, eliminar</button>
-      <button class="btn btn-sm btn-secondary" (click)="cancelDelete()">Cancelar</button>
-    </div>
-  </div>
-</div>
+

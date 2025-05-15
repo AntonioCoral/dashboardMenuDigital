@@ -15,22 +15,27 @@
       </div>
       <div class="card-body">
         <div class="form-group">
-          <label for="phoneNumber">Número de Teléfono</label>
-          <input
-            id="phoneNumber"
-            type="text"
-            class="form-control"
-            [(ngModel)]="phoneNumber"
-            placeholder="Ingresa el número de teléfono"
-          />
-      
+          <label for="phoneNumber" class="block font-medium mb-1">Número de Teléfono</label>
+            <div class="flex items-center space-x-2">
+              <span class="inline-flex items-center px-3 rounded-l border border-gray-300 bg-gray-100 text-gray-700 text-sm">
+                +52
+              </span>
+              <input
+                id="phoneNumber"
+                type="tel"
+                class="form-control flex-1 rounded-r border border-gray-300 focus:ring-yellow-500 focus:border-yellow-500"
+                [(ngModel)]="phoneNumber"
+                placeholder="Ej. 5544332211"
+              />
+            </div>
+
           <label for="location">Ubicación</label>
           <input
             id="location"
             type="text"
             class="form-control"
             [(ngModel)]="ubication"
-            placeholder="Ingresa la ubicación de la empresa"
+            placeholder="Ej. C. 12 x 3 y 4 Centro"
           />
 
           <label for="openedTime">Horario laboral</label>
@@ -39,7 +44,7 @@
             type="text"
             class="form-control"
             [(ngModel)]="openedTime"
-            placeholder="Ingresa el horario laboral"
+            placeholder="Ej. Lunes - Viernes de 8:00am a 7:00pm Sabado - Domingo 9:00am a 3:00pm"
           />
       
           <label for="bankAccount">Número de Tarjeta</label>
@@ -48,7 +53,7 @@
             type="text"
             class="form-control"
             [(ngModel)]="bankAccount"
-            placeholder="Ingresa el número de tarjeta"
+            placeholder="Ej. 1234567891234556"
           />
       
           <label for="clabe">CLABE Interbancaria</label>
@@ -57,7 +62,7 @@
             type="text"
             class="form-control"
             [(ngModel)]="clabe"
-            placeholder="Ingresa la CLABE interbancaria"
+            placeholder="Ej. 1234567899876543"
           />
       
           <label for="bankName">Nombre del Banco</label>
