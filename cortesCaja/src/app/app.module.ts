@@ -37,6 +37,7 @@ import { EditProductsComponent } from './componentes/edit-products/edit-products
 import { CarouselManagementComponent } from './componentes/carousel-management/carousel-management.component';
 import { ContactInfoManagementComponent } from './componentes/contact-info-management/contact-info-management.component';
 import { AuthInterceptor } from './services/auth-interceptor.service';
+import { PagoComponent } from './componentes/pago/pago.component';
 
 
 
@@ -60,6 +61,7 @@ import { AuthInterceptor } from './services/auth-interceptor.service';
     EditProductsComponent,
     CarouselManagementComponent,
     ContactInfoManagementComponent,
+    PagoComponent,
   ],
   imports: [
     BrowserModule,

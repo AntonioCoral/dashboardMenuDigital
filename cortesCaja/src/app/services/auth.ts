@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly apiUrl = 'https://codeconnectivity.com/api/api/auth';
+  private readonly apiUrl = 'http://localhost:500/api/auth';
 
   constructor(private http: HttpClient) {}
 

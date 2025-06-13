@@ -21,6 +21,11 @@
       </div>
       <div class="card-body">
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+<div *ngIf="renewalMessage" class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
+  <strong class="font-bold">Aviso:</strong>
+  <span class="block sm:inline">{{ renewalMessage }}</span>
+</div>
+
           <div class="form-group">
             <label for="username">Usuario</label>
             <input type="text" id="username" formControlName="username" class="form-control" required>

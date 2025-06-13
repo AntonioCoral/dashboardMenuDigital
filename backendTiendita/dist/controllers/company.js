@@ -17,6 +17,7 @@ const company_1 = __importDefault(require("../models/company"));
 const user_1 = __importDefault(require("../models/user"));
 // Crear una nueva empresa
 const createCompany = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     try {
         const { name, address, contactEmail, subdomain } = req.body;
         const company = yield company_1.default.create({ name, address, contactEmail, subdomain });
@@ -24,7 +25,19 @@ const createCompany = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
     catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error creating company', error });
+        if (error.name === 'SequelizeUniqueConstraintError') {
+            const field = (_b = (_a = error.errors) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.path;
+            if (field === 'subdomain') {
+                return res.status(400).json({ message: 'El subdominio ya está en uso.' });
+            }
+            if (field === 'contactEmail') {
+                return res.status(400).json({ message: 'Ese correo ya está registrado.' });
+            }
+            if (field === 'name') {
+                return res.status(400).json({ message: 'El nombre de empresa ya está registrado.' });
+            }
+        }
+        res.status(500).json({ message: 'Error creando la empresa' });
     }
 });
 exports.createCompany = createCompany;

@@ -9,6 +9,7 @@ interface UserAttributes {
   role: 'admin' | 'editor' | 'repartidor';
   isActive: boolean;
   isDelivery: boolean;
+  lastPaymentDate?: Date | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -21,6 +22,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public username!: string;
   public password!: string;
   public role!: 'admin' | 'editor' | 'repartidor';
+  public lastPaymentDate?: Date | null;
   public isActive!: boolean;
   public isDelivery!: boolean;
 
@@ -60,6 +62,10 @@ User.init(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    lastPaymentDate: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
   },
   {
     sequelize: db,

@@ -55,7 +55,7 @@ export class NavbarComponent implements OnInit {
       const { username, password } = this.loginForm.value;
 
       // Validación de credenciales
-      if (username === 'admin' && password === 'aljaC0ir') {
+      if (username === 'admin' && password === 'superadmin') {
         this.toastr.success('Credenciales correctas');
         this.router.navigate(['/corte-caja']);
         // Cerrar el modal después del inicio de sesión exitoso

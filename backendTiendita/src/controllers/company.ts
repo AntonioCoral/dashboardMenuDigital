@@ -10,10 +10,26 @@ export const createCompany = async (req: Request, res: Response) => {
     const company = await Company.create({ name, address, contactEmail, subdomain });
 
     res.status(201).json({ message: 'Company created successfully', company });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error creating company', error });
+  } catch (error: any) {
+  console.error(error);
+
+  if (error.name === 'SequelizeUniqueConstraintError') {
+    const field = error.errors?.[0]?.path;
+
+    if (field === 'subdomain') {
+      return res.status(400).json({ message: 'El subdominio ya está en uso.' });
+    }
+    if (field === 'contactEmail') {
+      return res.status(400).json({ message: 'Ese correo ya está registrado.' });
+    }
+    if (field === 'name') {
+      return res.status(400).json({ message: 'El nombre de empresa ya está registrado.' });
+    }
   }
+
+  res.status(500).json({ message: 'Error creando la empresa' });
+}
+
 };
 
 // Obtener todas las empresas

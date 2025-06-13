@@ -38,6 +38,10 @@ User.init({
         type: sequelize_1.DataTypes.BOOLEAN,
         defaultValue: false,
     },
+    lastPaymentDate: {
+        type: sequelize_1.DataTypes.DATE,
+        allowNull: true,
+    },
 }, {
     sequelize: conecction_1.default,
     modelName: 'User',

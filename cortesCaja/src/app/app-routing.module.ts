@@ -16,6 +16,7 @@ import { EditProductsComponent } from './componentes/edit-products/edit-products
 import { CarouselManagementComponent } from './componentes/carousel-management/carousel-management.component';
 import { ContactInfoService } from './services/contactInfo.service';
 import { ContactInfoManagementComponent } from './componentes/contact-info-management/contact-info-management.component';
+import { PagoComponent } from './componentes/pago/pago.component';
 
 
 const routes: Routes = [
@@ -31,6 +32,7 @@ const routes: Routes = [
   { path: 'admin-products', component: AdminProductsComponent },
   { path: 'edit-product/:id', component: EditProductsComponent },
   { path: 'carousel-management',component: CarouselManagementComponent},
+  { path: 'pago', component: PagoComponent},
   { path: 'contactInfo-management', component: ContactInfoManagementComponent},
   { path: '**', redirectTo:'', pathMatch: 'full'},
   

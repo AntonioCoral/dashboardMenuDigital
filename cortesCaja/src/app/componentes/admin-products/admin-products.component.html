@@ -153,6 +153,7 @@
             </div>
 
             <!-- Imagen del Producto -->
+             <img *ngIf="previewUrl" #filevistaprev  [src]="previewUrl" class="w-32 h-32 object-contain mt-2" />
             <div class="mb-3">
               <label for="image" class="form-label text-gray-500"
                 >Imagen del Producto</label
@@ -221,6 +222,9 @@
       </div>
     </div>
   </div>
+
+  
+
   
 
 <!-- Modal de resultados de búsqueda -->

@@ -13,6 +13,7 @@ import { ViewChild, ElementRef } from '@angular/core';
 })
 export class AdminProductsComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
+  @ViewChild('fileInput') filevistaprev!: ElementRef;
   form: FormGroup;
   categories: any[] = [];
   loading: boolean = false;
@@ -80,12 +81,37 @@ export class AdminProductsComponent implements OnInit {
     this.options.removeAt(index);
   }
 
-  onFileSelected(event: Event) {
-    const fileInput = event.target as HTMLInputElement;
-    if (fileInput.files && fileInput.files.length > 0) {
-      this.selectedFile = fileInput.files[0];
+  previewUrl: string | ArrayBuffer | null = null;
+
+onFileSelected(event: Event): void {
+  const fileInput = event.target as HTMLInputElement;
+
+  if (fileInput.files && fileInput.files.length > 0) {
+    const file = fileInput.files[0];
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    const maxSizeMB = 2;
+
+    if (!allowedTypes.includes(file.type)) {
+      this.toastr.error('Formato no válido. Usa JPG, PNG o GIF');
+      this.selectedFile = null;
+      this.previewUrl = null;
+      return;
     }
+
+    if (file.size > maxSizeMB * 1024 * 1024) {
+      this.toastr.error(`La imagen es muy grande. Máximo permitido: ${maxSizeMB}MB`);
+      this.selectedFile = null;
+      this.previewUrl = null;
+      return;
+    }
+
+    this.selectedFile = file;
+
+    const reader = new FileReader();
+    reader.onload = () => this.previewUrl = reader.result;
+    reader.readAsDataURL(file);
   }
+}
 
   addProduct() {
     if (this.form.invalid && this.importedProducts.length === 0) {
@@ -137,6 +163,9 @@ export class AdminProductsComponent implements OnInit {
           // ✅ Limpiar manualmente el campo de imagen en el DOM
         if (this.fileInput) {
           this.fileInput.nativeElement.value = '';
+        }
+        if (this.filevistaprev) {
+          this.filevistaprev.nativeElement.value = '';
         }
         },
         (error) => {
